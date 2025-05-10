@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import os
-import shutil
 from estrazione_pdf import estrai_testo_da_pdf  # Assicurati che questa funzione esista e sia corretta
 from gpt_module import analisi_tecnica_gpt  # Importa la tua funzione GPT
 from pathlib import Path
@@ -26,10 +25,13 @@ async def analizza_pdf(file: bytes):
         if not testo:
             return JSONResponse(status_code=400, content={"message": "Nessun testo estratto dal PDF."})
 
-        # Esegui l'analisi GPT
-        visura = "Dati visura estratti"  # Sostituisci con i dati reali estratti dal PDF o altre fonti
-        preventivi = "Preventivi associati"  # Sostituisci con i dati reali
-        analisi_result = analisi_tecnica_gpt(testo, visura, preventivi)
+        # Esegui l'analisi GPT con parametri opzionali
+        visura = estrai_visura(testo) if testo else None  # Optional
+        preventivi = estrai_preventivi(testo) if testo else None  # Optional
+        piano_ammortamento = estrai_piano_ammortamento(testo) if testo else None  # Optional
+
+        # Chiamata alla funzione analisi_gpt con i parametri opzionali
+        analisi_result = analisi_tecnica_gpt(testo, visura=visura, preventivi=preventivi, piano_ammortamento=piano_ammortamento)
 
         # Salvataggio dell'output GPT in un file di testo
         output_gpt_path = OUTPUT_DIR / "output_gpt.txt"
@@ -44,3 +46,24 @@ async def analizza_pdf(file: bytes):
 @app.get("/")
 def read_root():
     return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
+
+# Funzione per estrarre la visura dal testo del PDF (opzionale)
+def estrai_visura(testo: str):
+    # Logica per estrarre la visura dal testo
+    # Restituisce un dato simulato per visura come esempio
+    visura = "Visura estratta dal documento"
+    return visura
+
+# Funzione per estrarre i preventivi dal testo del PDF (opzionale)
+def estrai_preventivi(testo: str):
+    # Logica per estrarre i preventivi dal testo
+    # Restituisce un dato simulato per preventivi come esempio
+    preventivi = "Preventivi associati trovati nel documento"
+    return preventivi
+
+# Funzione per estrarre il piano di ammortamento dal testo del PDF (opzionale)
+def estrai_piano_ammortamento(testo: str):
+    # Logica per estrarre il piano di ammortamento dal testo
+    # Restituisce un dato simulato per piano_ammortamento come esempio
+    piano_ammortamento = "Piano di ammortamento trovato nel documento"
+    return piano_ammortamento
