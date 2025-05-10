@@ -1,7 +1,6 @@
-
+uvicorn
 requests
 flask
-gunicorn
 pandas
 numpy
 python-dotenv
