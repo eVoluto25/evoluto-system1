@@ -1,70 +1,46 @@
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 import os
-import json
-from estrazione_pdf import estrai_testo_da_pdf
-from gpt_module import analisi_tecnica_gpt
-from claude_module import prompt_claude
-from email_handler import recupera_email_con_allegati
-from analisi_gpt import estrai_dati_documento
+import shutil
+from estrazione_pdf import estrai_testo_da_pdf  # Assicurati che questa funzione esista e sia corretta
+from gpt_module import analisi_tecnica_gpt  # Importa la tua funzione GPT
+from pathlib import Path
 
-# DEBUG 1: Avvio
-print("DEBUG 1: Avvio script")
+app = FastAPI()
 
-# Carica i bandi dal file JSON aggiornato
-try:
-    with open("bandi_tracker/bandi_mimit.json", "r", encoding="utf-8") as f:
-        bandi = json.load(f)
-        print(f"DEBUG 2: Bandi caricati. Totale: {len(bandi)}")
-except Exception as e:
-    print("ERRORE nel caricamento dei bandi:", e)
-    exit()
+# Definiamo il percorso della cartella output
+OUTPUT_DIR = Path("output")
+if not OUTPUT_DIR.exists():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Estrai il documento dall'ultima email ricevuta con allegato
-try:
-    documento_path = recupera_email_con_allegati()
-    print(f"DEBUG 3: Documento scaricato: {documento_path}")
-except Exception as e:
-    print("ERRORE nel recupero del documento:", e)
-    documento_path = None
+@app.post("/analizza-pdf/")
+async def analizza_pdf(file: bytes):
+    try:
+        # Salva il file ricevuto
+        pdf_path = OUTPUT_DIR / "documento.pdf"
+        with open(pdf_path, "wb") as f:
+            f.write(file)
+        
+        # Estrazione testo dal PDF
+        testo = estrai_testo_da_pdf(pdf_path)
+        if not testo:
+            return JSONResponse(status_code=400, content={"message": "Nessun testo estratto dal PDF."})
 
-# Verifica se è stato trovato un documento, altrimenti esce
-if not documento_path:
-    print("✘ Interruzione: nessun documento disponibile per analisi.")
-    exit()
+        # Esegui l'analisi GPT
+        visura = "Dati visura estratti"  # Sostituisci con i dati reali estratti dal PDF o altre fonti
+        preventivi = "Preventivi associati"  # Sostituisci con i dati reali
+        analisi_result = analisi_tecnica_gpt(testo, visura, preventivi)
 
-# Estrai i dati dal documento (bilancio, visura, ecc.)
-try:
-    dati = estrai_dati_documento(documento_path)
-    print(f"DEBUG 4: Dati estratti:\n{dati}")
-except Exception as e:
-    print("ERRORE nell'estrazione dei dati:", e)
-    dati = {}
+        # Salvataggio dell'output GPT in un file di testo
+        output_gpt_path = OUTPUT_DIR / "output_gpt.txt"
+        with open(output_gpt_path, "w") as f:
+            f.write(analisi_result)
 
-# Prompt per GPT
-try:
-    output_gpt = analisi_tecnica_gpt(dati)
-    print("DEBUG 5: Risposta GPT generata")
-except Exception as e:
-    print("ERRORE nel prompt GPT:", e)
-    output_gpt = ""
+        return JSONResponse(status_code=200, content={"message": "Analisi completata con successo.", "data": analisi_result})
 
-# Prompt per Claude
-try:
-    output_claude = prompt_claude(
-        output_gpt=output_gpt,
-        preventivi=dati.get("preventivi", ""),
-        piano_ammortamento=dati.get("ammortamento", "")
-    )
-    print("DEBUG 6: Risposta Claude generata")
-except Exception as e:
-    print("ERRORE nel prompt Claude:", e)
-    output_claude = ""
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": f"Errore durante l'elaborazione: {str(e)}"})
 
-# Salvataggio risultati
-try:
-    with open("output/output_gpt.txt", "w", encoding="utf-8") as f:
-        f.write(output_gpt)
-    with open("output/output_claude.txt", "w", encoding="utf-8") as f:
-        f.write(output_claude)
-    print("DEBUG 7: Output salvati")
-except Exception as e:
-    print("ERRORE nel salvataggio output:", e)
+@app.get("/")
+def read_root():
+    return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
