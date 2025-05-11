@@ -1,6 +1,6 @@
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
-from match_bandi import carica_bandi, filtra_bandi_compatibili
+from matching_bandi import carica_bandi, filtra_bandi_compatibili
 from claude_module import genera_relazione_con_claude
 from invio_email import invia_email_gmail
 from pathlib import Path
