@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
+import shutil
+
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
 
@@ -10,7 +12,7 @@ OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 @app.post("/upload/")
-async def ricevi_dal_form(
+async def upload_pdf(
     nome: str = Form(...),
     cognome: str = Form(...),
     telefono: str = Form(...),
@@ -18,50 +20,38 @@ async def ricevi_dal_form(
     file: UploadFile = File(...)
 ):
     try:
-        # Salva PDF su disco
-        pdf_path = OUTPUT_DIR / file.filename
-        content = await file.read()
-        with open(pdf_path, "wb") as f:
-            f.write(content)
+        pdf_path = OUTPUT_DIR / f"{nome}_{cognome}.pdf"
+        with open(pdf_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-        # Estrazione testo
         testo = estrai_testo_da_pdf(pdf_path)
         if not testo:
-            return JSONResponse(status_code=400, content={"message": "PDF vuoto o non leggibile"})
+            return JSONResponse(status_code=400, content={"message": "Nessun testo estratto dal PDF."})
 
-        # Estrazione opzionale
         visura = estrai_visura(testo)
         preventivi = estrai_preventivi(testo)
         piano_ammortamento = estrai_piano_ammortamento(testo)
 
-        # Analisi GPT
-        analisi = analisi_tecnica_gpt(testo, visura=visura, preventivi=preventivi, piano_ammortamento=piano_ammortamento)
+        analisi_result = analisi_tecnica_gpt(testo, visura=visura, preventivi=preventivi, piano_ammortamento=piano_ammortamento)
 
-        # Salva risultato
-        output_path = OUTPUT_DIR / f"{file.filename}_output.txt"
-        with open(output_path, "w") as f:
-            f.write(analisi)
+        output_gpt_path = OUTPUT_DIR / f"analisi_{nome}_{cognome}.txt"
+        with open(output_gpt_path, "w") as f:
+            f.write(analisi_result)
 
-        return JSONResponse(content={
-            "message": "Analisi completata",
-            "cliente": f"{nome} {cognome}",
-            "telefono": telefono,
-            "email": email,
-            "file": file.filename
-        })
+        return {"message": "Analisi completata con successo", "analisi": analisi_result}
 
     except Exception as e:
-        return JSONResponse(status_code=500, content={"message": str(e)})
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.get("/")
-def home():
+def read_root():
     return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
 
 def estrai_visura(testo: str):
-    return "Visura estratta dal documento"
+    return "Visura simulata estratta dal testo"
 
 def estrai_preventivi(testo: str):
-    return "Preventivi trovati nel documento"
+    return "Preventivi simulati trovati nel testo"
 
 def estrai_piano_ammortamento(testo: str):
-    return "Piano di ammortamento rilevato"
+    return "Piano di ammortamento simulato trovato nel testo"
