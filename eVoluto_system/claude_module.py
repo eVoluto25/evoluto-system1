@@ -1,3 +1,7 @@
+import os
+import anthropic
+import json
+
 def prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi):
     return f"""
 Sintesi dell'analisi tecnica (GPT):
@@ -24,11 +28,4 @@ Ora integra queste informazioni e fornisci una visione strategica completa, stru
        – Beneficiari ammessi
        – Finalità dell’incentivo
      • Indica il beneficio economico ottenibile e se l’intervento è cumulabile
-     • Spiega il vantaggio competitivo per l’azienda
-
-Obiettivo:
-– Evidenzia le opportunità strategiche e concrete per rafforzare la solidità economica e finanziaria.
-– Includi eventuali interventi correttivi, suggerimenti pratici e leve gestionali per migliorare margini, rating, fiscalità e accesso al credito.
-
-Scrivi in modo chiaro, concreto, professionale e orientato all’azione. Niente teoria, solo ciò che serve all’imprenditore.
-"""
+     • Spiega il
