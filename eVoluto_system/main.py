@@ -1,7 +1,10 @@
-from typing import Optional
+# main.py
+
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
+
+from pipeline import esegui_analisi_completa
 
 app = FastAPI()
 OUTPUT_DIR = Path("output")
@@ -9,29 +12,28 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 @app.post("/analizza-pdf/")
 async def analizza_pdf(
-    name: Optional[str] = Form(None, alias="name-2"),
-    phone: Optional[str] = Form(None, alias="phone-1"),
-    email: Optional[str] = Form(None, alias="email-1"),
-    file: Optional[UploadFile] = Form(None, alias="upload-1")
+    name: str = Form(..., alias="name-2"),
+    phone: str = Form(..., alias="phone-1"),
+    email: str = Form(..., alias="email-1"),
+    file: UploadFile = Form(..., alias="upload-1")
 ):
     try:
-        file_info = None
-        if file:
-            file_path = OUTPUT_DIR / file.filename
-            with open(file_path, "wb") as f:
-                f.write(await file.read())
-            file_info = file.filename
+        file_path = OUTPUT_DIR / file.filename
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+
+        risultato = esegui_analisi_completa(file_path, name)
 
         return JSONResponse(status_code=200, content={
-            "message": "Dati ricevuti.",
+            "message": "Analisi completata",
             "nome": name,
-            "telefono": phone,
             "email": email,
-            "file_salvato": file_info
+            "output": risultato
         })
+
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.get("/")
 def read_root():
-    return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
+    return {"message": "Servizio attivo – invia un file per l’analisi"}
