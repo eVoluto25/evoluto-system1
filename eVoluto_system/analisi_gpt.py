@@ -1,25 +1,21 @@
-import os
-from estrazione_pdf import estrai_testo_da_pdf
+# gpt_relazione.py
 
-PDF_DIR = "estratti_pdf"
+def genera_relazione_finale(analisi_tecnica: str, nome_azienda: str = "", periodo: str = "") -> str:
+    prompt = f"""
+Agisci come consulente aziendale esperto.
+Trasforma l’analisi tecnica qui sotto in una relazione professionale per un imprenditore, con linguaggio semplice e valore strategico.
 
-def estrai_dati_documento(documento_path):
-    nome_file = os.path.basename(documento_path)
-    with open(documento_path, "rb") as f:
-        testo = estrai_testo_da_pdf(f.read())
+🧩 Dati aggiuntivi:
+- Azienda: {nome_azienda if nome_azienda else "non specificata"}
+- Periodo di riferimento: {periodo if periodo else "non indicato"}
 
-    # Simulazione di parsing da testo
-    dati = {
-        "bilancio": testo,
-        "visura": "Contenuto visura simulato",
-        "preventivi": "Preventivo 1: 30.000 €",
-        "ammortamento": "5 anni"
-    }
+📄 Analisi tecnica:
+{analisi_tecnica}
 
-    # Salvataggio in estratti_pdf/
-    os.makedirs(PDF_DIR, exist_ok=True)
-    estratto_path = os.path.join(PDF_DIR, nome_file.replace(".pdf", ".txt"))
-    with open(estratto_path, "w", encoding="utf-8") as f:
-        f.write(testo)
-
-    return dati
+🎯 Output atteso:
+- Riassunto dei punti chiave dell'analisi
+- Indicazioni sui benefici strategici
+- Linguaggio chiaro e coinvolgente
+- Conclusione con una frase come: “Richiedi un approfondimento gratuito per conoscere le azioni consigliate.”
+"""
+    return prompt
