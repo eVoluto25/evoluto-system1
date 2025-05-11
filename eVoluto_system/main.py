@@ -40,3 +40,9 @@ def read_root():
 @app.post("/webhook-check/")
 async def webhook_check(request: Request):
     return JSONResponse(status_code=200, content={"message": "Webhook attivo"})
+    from fastapi.responses import PlainTextResponse
+
+@app.options("/analizza-pdf/", include_in_schema=False)
+@app.head("/analizza-pdf/", include_in_schema=False)
+def handle_verifica_webhook():
+    return PlainTextResponse(status_code=200)
