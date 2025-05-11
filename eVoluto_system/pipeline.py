@@ -1,40 +1,48 @@
 from estrazione_pdf import estrai_testo_da_pdf
+from gpt_module import analisi_tecnica_gpt
+from match_bandi import carica_bandi, filtra_bandi_compatibili
+from claude_module import genera_relazione_con_claude
 from invio_email import invia_email_gmail
 from pathlib import Path
-from gpt_module import analisi_tecnica_gpt
-from claude_module import genera_relazione_con_claude
 
 def esegui_analisi_completa(file_path: Path, nome_azienda: str = "") -> str:
+    # 1. Estrazione testo PDF
     testo = estrai_testo_da_pdf(file_path)
-
     if not testo:
         raise ValueError("❌ Il PDF non contiene testo valido.")
 
-    # 1. Analisi tecnica GPT
-    output_gpt = analisi_tecnica_gpt(testo, nome_azienda=nome_azienda)
+    # 2. Analisi tecnica GPT
+    output_gpt = analisi_tecnica_gpt(testo)
 
-    # 2. Recupera dati opzionali (es. preventivi, ammortamenti)
-    preventivi = "Dato non disponibile"
-    piano_ammortamento = "Dato non disponibile"
+    # 3. Dati simulati per preventivi e piano ammortamento
+    preventivi = "Preventivo investimento: 45.000 € per macchinari"
+    piano_ammortamento = "60 mesi – rata stimata 900 €/mese – TAN 1,8%"
 
-    # 3. Leggi i bandi disponibili (da CSV)
-    with open("bandi_tracker/bandi.json", "r", encoding="utf-8") as f:
-        bandi = f.read()
+    # 4. Caricamento bandi
+    bandi = carica_bandi("bandi_tracker/bandi.csv")
+    bandi_compatibili = filtra_bandi_compatibili(testo, bandi)
 
-    # 4. Chiamata Claude per il matching e la strategia
-    relazione_finale = genera_relazione_con_claude(
+    # 5. Claude: relazione strategica finale
+    relazione = genera_relazione_con_claude(
         output_gpt=output_gpt,
         preventivi=preventivi,
         piano_ammortamento=piano_ammortamento,
-        bandi=bandi
+        bandi=bandi_compatibili
     )
 
-    # 5. Salvataggio output
+    # 6. Salvataggio
     output_path = Path("output/relazione_finale.txt")
     with open(output_path, "w") as f:
-        f.write(relazione_finale)
+        f.write(relazione)
 
-    # 6. Invio email
-    invia_email_gmail(output_path)
+    # 7. Invio email
+    invia_email_gmail(
+        destinatario="info@capitaleaziendale.it",
+        oggetto=f"[CHECK] Verifica aziendale per {nome_azienda}",
+        corpo_testo=f"Analisi ricevuta da {nome_azienda}. In allegato trovi la relazione completa.",
+        allegato_path=output_path,
+        email_mittente="verifica.evoluto@gmail.com",
+        password_app="vvkj cybv njee qjts"  # già autorizzata
+    )
 
-    return relazione_finale
+    return relazione
