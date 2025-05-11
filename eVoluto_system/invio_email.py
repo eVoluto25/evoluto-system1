@@ -1,24 +1,35 @@
-# invio_email.py
 import smtplib
-from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from email.mime.text import MIMEText
+import os
 
-def invia_email_gmail(subject, body, allegato_path, destinatario):
-    EMAIL_ADDRESS = "info@capitaleaziendale.it"
-    EMAIL_PASSWORD = "vvkj cybv njee qjts"  
+def invia_email_gmail(file_path):
+    mittente = "verifica.evoluto@gmail.com"
+    destinatario = "info@capitaleaziendale.it"
+    password = os.getenv("GMAIL_APP_PASSWORD")  # ⚠️ La password va definita come variabile d’ambiente su Render
 
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = EMAIL_ADDRESS
+    oggetto = "📊 Analisi aziendale completata – eVoluto"
+    corpo_email = (
+        "Ciao,\n\nin allegato trovi la relazione tecnica finale generata dal sistema eVoluto.\n\n"
+        "Se hai bisogno di ulteriori approfondimenti o vuoi attivare un confronto operativo, siamo a disposizione.\n\n"
+        "Cordiali saluti,\n\nIl Team Capitale Aziendale"
+    )
+
+    # Costruzione messaggio
+    msg = MIMEMultipart()
+    msg["From"] = mittente
     msg["To"] = destinatario
-    msg.set_content(body)
+    msg["Subject"] = oggetto
+    msg.attach(MIMEText(corpo_email, "plain"))
 
-    # Allega file
-    with open(allegato_path, "rb") as f:
-        file_data = f.read()
-        file_name = f.name.split("/")[-1]
-        msg.add_attachment(file_data, maintype="application", subtype="pdf", filename=file_name)
+    # Allegato
+    with open(file_path, "rb") as f:
+        part = MIMEApplication(f.read(), Name=os.path.basename(file_path))
+        part["Content-Disposition"] = f'attachment; filename="{os.path.basename(file_path)}"'
+        msg.attach(part)
 
-    # Invio
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
+    # Invio email
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(mittente, password)
+        server.send_message(msg)
