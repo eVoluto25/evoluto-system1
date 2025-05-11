@@ -7,3 +7,4 @@ python-dotenv
 PyMuPDF
 openai
 fastapi
+python-multipart
