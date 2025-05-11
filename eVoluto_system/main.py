@@ -1,48 +1,37 @@
-from fastapi import FastAPI, UploadFile, Form, Request
+from typing import Optional
+from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
 
 app = FastAPI()
-
-# Crea la cartella output se non esiste
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Endpoint principale per ricezione e salvataggio file
 @app.post("/analizza-pdf/")
 async def analizza_pdf(
-    name: str = Form(..., alias="name-2"),
-    phone: str = Form(..., alias="phone-1"),
-    email: str = Form(..., alias="email-1"),
-    file: UploadFile = Form(..., alias="upload-1")
+    name: Optional[str] = Form(None, alias="name-2"),
+    phone: Optional[str] = Form(None, alias="phone-1"),
+    email: Optional[str] = Form(None, alias="email-1"),
+    file: Optional[UploadFile] = Form(None, alias="upload-1")
 ):
     try:
-        file_path = OUTPUT_DIR / file.filename
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
+        file_info = None
+        if file:
+            file_path = OUTPUT_DIR / file.filename
+            with open(file_path, "wb") as f:
+                f.write(await file.read())
+            file_info = file.filename
 
         return JSONResponse(status_code=200, content={
-            "message": "File ricevuto con successo.",
+            "message": "Dati ricevuti.",
             "nome": name,
             "telefono": phone,
             "email": email,
-            "file_salvato": file.filename
+            "file_salvato": file_info
         })
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-# Endpoint di test (homepage)
 @app.get("/")
 def read_root():
     return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
-
-# Endpoint di validazione per testare i Webhook Forminator
-@app.post("/webhook-check/")
-async def webhook_check(request: Request):
-    return JSONResponse(status_code=200, content={"message": "Webhook attivo"})
-    from fastapi.responses import PlainTextResponse
-
-@app.options("/analizza-pdf/", include_in_schema=False)
-@app.head("/analizza-pdf/", include_in_schema=False)
-def handle_verifica_webhook():
-    return PlainTextResponse(status_code=200)
