@@ -12,30 +12,31 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 @app.post("/analizza-pdf/")
 async def analizza_pdf(file: UploadFile = File(...)):
     try:
-        # Salva il file PDF
         pdf_path = OUTPUT_DIR / file.filename
         with open(pdf_path, "wb") as f:
             content = await file.read()
             f.write(content)
 
-        # Estrai testo dal PDF
         testo = estrai_testo_da_pdf(pdf_path)
         if not testo:
             return JSONResponse(status_code=400, content={"message": "Nessun testo estratto dal PDF."})
 
-        # Analisi con GPT
-        analisi_result = analisi_tecnica_gpt(testo)
+        # Esegui l'analisi
+        visura = estrai_visura(testo)
+        preventivi = estrai_preventivi(testo)
+        piano_ammortamento = estrai_piano_ammortamento(testo)
+        analisi_result = analisi_tecnica_gpt(testo, visura, preventivi, piano_ammortamento)
 
-        # Salva output
-        output_path = OUTPUT_DIR / "output_gpt.txt"
-        with open(output_path, "w") as f:
-            f.write(analisi_result)
-
-        return JSONResponse(status_code=200, content={"message": "Analisi completata.", "risultato": analisi_result})
+        return JSONResponse(status_code=200, content={"message": "Analisi completata", "data": analisi_result})
 
     except Exception as e:
-        return JSONResponse(status_code=500, content={"message": f"Errore interno: {str(e)}"})
+        return JSONResponse(status_code=500, content={"message": f"Errore: {str(e)}"})
 
 @app.get("/")
 def read_root():
-    return {"message": "Servizio attivo. Invia un file PDF per l'analisi via POST."}
+    return {"message": "Servizio attivo. Invia un file PDF per l'analisi."}
+
+# Placeholder
+def estrai_visura(testo): return "Visura simulata"
+def estrai_preventivi(testo): return "Preventivi simulati"
+def estrai_piano_ammortamento(testo): return "Piano simulato"
