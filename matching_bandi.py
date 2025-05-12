@@ -1,40 +1,46 @@
 import pandas as pd
-from pathlib import Path
-from claude_module import verifica_compatibilita_bando  # funzione da definire
+from config import BANDI_CSV_PATH
 
-def matching_bandi_con_azienda(percorso_csv, testo_azienda):
-    risultati = []
+def normalizza_testo(testo):
+    if not isinstance(testo, str):
+        return ""
+    return testo.lower().strip()
 
-    # Carica i bandi dal CSV
-    df = pd.read_csv(percorso_csv)
-    
-    for index, row in df.iterrows():
-        titolo = row.get("titolo", "")
-        descrizione = row.get("descrizione", "")
-        regione = row.get("territorio", "")
-        forma = row.get("forma_agevolazione", "")
-        beneficiari = row.get("beneficiari", "")
-        
-        # Combina i dati del bando in un testo coerente
-        testo_bando = f"TITOLO: {titolo}\nDESCRIZIONE: {descrizione}\nREGIONE: {regione}\nFORMA AGEVOLAZIONE: {forma}\nBENEFICIARI: {beneficiari}"
-        
-        try:
-            # Chiamata al modello Claude o GPT per la verifica
-            esito = verifica_compatibilita_bando(testo_azienda, testo_bando)
-            risultati.append({
-                "bando": titolo,
-                "compatibile": esito.get("compatibile", False),
-                "motivo": esito.get("motivo", "N/D"),
-                "contributo": esito.get("contributo", "N/D"),
-                "probabilita": esito.get("probabilita", "N/D")
-            })
-        except Exception as e:
-            risultati.append({
-                "bando": titolo,
-                "compatibile": False,
-                "motivo": f"Errore durante l’analisi: {str(e)}",
-                "contributo": "N/D",
-                "probabilita": "N/D"
-            })
+def verifica_compatibilita_bando(bando, caratteristiche_azienda):
+    """
+    Confronta le caratteristiche dell’azienda con i requisiti del bando.
+    """
+    try:
+        for campo in ["territorio", "beneficiari", "settore", "forma_agevolazione", "finalita"]:
+            valore_bando = normalizza_testo(bando.get(campo, ""))
+            valore_azienda = normalizza_testo(caratteristiche_azienda.get(campo, ""))
+            if valore_azienda and valore_azienda not in valore_bando:
+                return False
+        return True
+    except Exception as e:
+        print(f"Errore nella verifica compatibilità: {e}")
+        return False
 
-    return risultati
+def filtra_bandi_compatibili(caratteristiche_azienda):
+    """
+    Restituisce un elenco di bandi compatibili con l'azienda analizzata.
+    """
+    try:
+        df = pd.read_csv(BANDI_CSV_PATH)
+        bandi_compatibili = []
+
+        for _, bando in df.iterrows():
+            if verifica_compatibilita_bando(bando, caratteristiche_azienda):
+                bandi_compatibili.append({
+                    "titolo": bando.get("titolo", ""),
+                    "link": bando.get("link", ""),
+                    "contributo": bando.get("forma_agevolazione", ""),
+                    "finalita": bando.get("finalita", "")
+                })
+
+        return bandi_compatibili
+
+    except FileNotFoundError:
+        return [{"errore": "⚠️ File bandi non trovato."}]
+    except Exception as e:
+        return [{"errore": f"⚠️ Errore imprevisto: {e}"}]
