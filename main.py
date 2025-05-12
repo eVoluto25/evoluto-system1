@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import os
 
-from pipeline import esegui_analisi_completa  # Usa il nome reale presente nel tuo sistema
+from pipeline import elabora_pipeline
 
 app = FastAPI()
 
