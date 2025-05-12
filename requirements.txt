@@ -1,0 +1,11 @@
+uvicorn
+requests
+flask
+pandas
+numpy
+python-dotenv
+PyMuPDF
+openai
+fastapi
+python-multipart
+anthropic
