@@ -10,7 +10,7 @@ from pipeline import esegui_analisi_completa
 
 app = FastAPI()
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {"status": "ok"}
     
