@@ -9,8 +9,21 @@ from datetime import datetime
 app = FastAPI()
 
 @app.post("/analizza-pdf/")
-async def analizza_pdf_endpoint(file: UploadFile, nome_azienda: str = Form(...)):
-    """
+async def ricevi_dati_form(request: Request):
+    try:
+        form_data = await request.form()
+        # Per esempio: recupera i dati dal form
+        nome = form_data.get("nome")
+        email = form_data.get("email")
+        file = form_data.get("file")  # UploadFile se gestito come file
+
+        # Logica temporanea per confermare ricezione
+        print("Ricevuto:", nome, email)
+
+        return {"status": "success", "message": "Dati ricevuti correttamente"}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
     Endpoint riceve PDF da Forminator e avvia l'analisi completa.
     """
     try:
