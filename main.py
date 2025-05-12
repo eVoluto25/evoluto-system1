@@ -8,32 +8,24 @@ from datetime import datetime
 
 app = FastAPI()
 
-@app.post("/")
-async def analizza_pdf(
-    file: UploadFile = Form(..., alias="upload-1"),
-    nome: str = Form(..., alias="name-2"),
-    email: str = Form(..., alias="email-1"),
-    telefono: str = Form(..., alias="phone-1")
-):
-    # Percorso output temporaneo
-    OUTPUT_DIR = Path("estratti_pdf")
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    percorso_pdf = OUTPUT_DIR / f"{datetime.utcnow().timestamp()}_{file.filename}"
-
-    # Salva il PDF temporaneamente
-    with open(percorso_pdf, "wb") as f:
-        f.write(await file.read())
-
-    # Esegue l’analisi completa
+@app.post("/analizza-pdf/")
+async def analizza_pdf_endpoint(file: UploadFile, nome_azienda: str = Form(...)):
+    """
+    Endpoint riceve PDF da Forminator e avvia l'analisi completa.
+    """
     try:
-        risultato = esegui_analisi_completa(percorso_pdf, nome_azienda=nome)
-        return JSONResponse(content={
-            "successo": True,
-            "messaggio": "Analisi completata con successo.",
-            "output": risultato
-        })
+        # Salva il file PDF nella directory degli estratti
+        input_path = Path("estratti_pdf") / f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}"
+        input_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(input_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+
+        # Avvia l'analisi
+        output = esegui_analisi_completa(file_path=input_path, nome_azienda=nome_azienda)
+
+        return JSONResponse(content={"status": "ok", "output": output})
+
     except Exception as e:
-        return JSONResponse(content={
-            "successo": False,
-            "errore": str(e)
-        }, status_code=500)
+        return JSONResponse(status_code=500, content={"status": "error", "detail": str(e)})
