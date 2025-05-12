@@ -3,6 +3,18 @@ from fastapi.responses import JSONResponse
 from pathlib import Path
 import os
 from datetime import datetime, timedelta
+from fastapi import FastAPI, UploadFile, Form
+from fastapi.responses import JSONResponse
+from pathlib import Path
+import os
+import sys
+
+# 👉 Forza il path assoluto della cartella bandi_tracker
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "bandi_tracker")))
+
+from download_bandi import download_bandi
+from pipeline import esegui_analisi_completa
+from datetime import datetime, timedelta
 
 from pipeline import esegui_analisi_completa
 from bandi_tracker.download_bandi import download_bandi  # ✅ Corretto qui
