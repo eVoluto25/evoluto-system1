@@ -3,10 +3,7 @@ import anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
-
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-if not ANTHROPIC_API_KEY:
-    raise ValueError("❌ Variabile d'ambiente ANTHROPIC_API_KEY non trovata. Verifica il file .env o la configurazione su Render.")
 
 def prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi):
     return f"""
@@ -29,7 +26,7 @@ Ora integra queste informazioni e fornisci una visione strategica completa, stru
 
    – Per ciascun bando:
      • Verifica se è compatibile in base a:
-       – Forma di agevolazione (es. fondo perduto, credito d’imposta, finanziamento agevolato)
+       – Forma di agevolazione
        – Territorio di applicazione
        – Beneficiari ammessi
        – Finalità dell’incentivo
@@ -44,20 +41,12 @@ Scrivi in modo chiaro, concreto, professionale e orientato all’azione. Niente 
 """
 
 def genera_relazione_con_claude(output_gpt, preventivi, piano_ammortamento, bandi):
-    prompt = prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi)
-
-    client = anthropic.Anthropic(
-        api_key=ANTHROPIC_API_KEY
-    )
-
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     response = client.messages.create(
         model="claude-3-opus-20240229",
         max_tokens=4000,
         temperature=0.5,
-        system="Sei un analista finanziario esperto in bilanci e incentivi pubblici. Scrivi relazioni chiare e concrete per imprenditori.",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
+        system="Sei un analista finanziario esperto.",
+        messages=[{"role": "user", "content": prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi)}]
     )
-
     return response.content[0].text.strip()
