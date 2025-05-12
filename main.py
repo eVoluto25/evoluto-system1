@@ -10,6 +10,10 @@ from pipeline import esegui_analisi_completa
 
 app = FastAPI()
 
+@app.get("/")
+async def root():
+    return {"status": "ok"}
+    
 @app.post("/analizza-pdf")
 async def analizza_pdf(
     name: str = Form(..., alias="name_2"),
