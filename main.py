@@ -10,10 +10,10 @@ app = FastAPI()
 
 @app.post("/analizza-pdf")
 async def analizza_pdf(
-    name: str = Form(..., alias="name-2"),
-    phone: str = Form(..., alias="phone-1"),
-    email: str = Form(..., alias="email-1"),
-    upload: UploadFile = Form(..., alias="upload-1")
+    name: str = Form(..., alias="name_2"),
+    phone: str = Form(..., alias="phone_1"),
+    email: str = Form(..., alias="email_1"),
+    upload: UploadFile = Form(..., alias="upload_1")
 ):
     try:
         # Cartella di salvataggio coerente con il sistema
