@@ -49,3 +49,19 @@ async def analizza_pdf(
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"status": "error", "detail": str(e)})
+
+        @app.post("/")
+async def ricevi_dal_form_root(file: UploadFile = File(...), nome_azienda: str = Form(...)):
+    # fallback per i form che inviano su dominio root
+    print("Ricevuto file dal form root")
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    percorso_file = OUTPUT_DIR / file.filename
+    with open(percorso_file, "wb") as f:
+        f.write(await file.read())
+
+    print(f"File salvato in: {percorso_file}")
+
+    risultato = esegui_analisi_completa(percorso_file, nome_azienda)
+    print(f"Risultato analisi: {risultato}")
+
+    return JSONResponse(content={"esito": "ricevuto", "analisi": risultato})
