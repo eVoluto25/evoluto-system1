@@ -5,7 +5,7 @@ pandas
 numpy
 python-dotenv
 PyMuPDF
-openai
+openai==0.28
 fastapi
 python-multipart
 anthropic
