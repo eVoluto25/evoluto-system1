@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise ValueError("❌ Variabile d'ambiente ANTHROPIC_API_KEY non trovata. Verifica il file .env o la configurazione su Render.")
 
 def prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi):
     return f"""
