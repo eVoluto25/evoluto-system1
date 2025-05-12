@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from pathlib import Path
 import os
 from pipeline import esegui_analisi_completa
-from bandi_traker.download_bandi import download_bandi
+from bandi_tracker.download_bandi import download_bandi
 from datetime import datetime, timedelta
 
 app = FastAPI()
