@@ -13,7 +13,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # 🔁 Controllo aggiornamento bandi
 def check_aggiornamento_bandi():
-    percorso_file = Path("bandi_traker/dataset_bandi.csv")
+    percorso_file = Path("bandi_tracker/dataset_bandi.csv")
     giorni_limite = 15
 
     if not percorso_file.exists():
