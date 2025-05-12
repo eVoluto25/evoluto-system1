@@ -26,6 +26,7 @@ async def analizza_pdf(
         filename = f"{timestamp}_{upload.filename}"
         upload_folder = Path("uploads")
         upload_folder.mkdir(exist_ok=True)
+        Path("uploads").mkdir(parents=True, exist_ok=True)
         path = Path("uploads") / filename
         with open(path, "wb") as f:
             f.write(await upload.read())
