@@ -20,17 +20,12 @@ async def analizza_pdf(
     try:
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"{timestamp}_{upload.filename}"
-        filepath = Path(f"/tmp/{filename}")
-
-        with open(filepath, "wb") as f:
+        path = Path("uploads") / filename
+        with open(path, "wb") as f:
             f.write(await upload.read())
-
-        logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={filename}")
-
-        # Esegui analisi (opzionale)
-        esegui_analisi_completa(filepath)
-
+        logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
+        elabora_pipeline(path, upload.filename)
         return JSONResponse(content={"esito": "ok"})
     except Exception as e:
-        logging.error(f"Errore: {e}")
-        return JSONResponse(content={"esito": "errore", "messaggio": str(e)}, status_code=500)
+        logging.error(f"Errore durante l'elaborazione: {e}")
+        return JSONResponse(content={"esito": "errore", "dettaglio": str(e)}, status_code=500)
