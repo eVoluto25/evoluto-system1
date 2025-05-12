@@ -1,5 +1,3 @@
-import logging
-logging.basicConfig(level=logging.INFO)
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
@@ -10,6 +8,11 @@ from pipeline import esegui_analisi_completa  # Usa il nome reale presente nel t
 
 app = FastAPI()
 
+@app.get("/")
+def test():
+    return {"status": "API online"}
+
+
 @app.post("/analizza-pdf")
 async def analizza_pdf(
     name: str = Form(..., alias="name_2"),
@@ -18,7 +21,6 @@ async def analizza_pdf(
     upload: UploadFile = Form(..., alias="upload_1")
 ):
     try:
-        logging.info(f"➡️ Richiesta ricevuta: name={name}, phone={phone}, email={email}, file={upload.filename}")
         # Cartella di salvataggio coerente con il sistema
         output_dir = Path("output")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -37,8 +39,6 @@ async def analizza_pdf(
         })
 
     except Exception as e:
-        logging.error("❌ Errore interno nel backend")
-        logging.exception(e)
         return JSONResponse(status_code=500, content={
             "status": "error",
             "message": str(e)
