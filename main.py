@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import os
 
-from pipeline import elabora_analisi_completa
+from pipeline import esegui_analisi_completa
 
 app = FastAPI()
 
@@ -24,7 +24,7 @@ async def analizza_pdf(
         with open(path, "wb") as f:
             f.write(await upload.read())
         logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
-        elabora_pipeline(path, upload.filename)
+        esegui_analisi_completa(path, {"nome": name, "email": email, "telefono": phone}, "bandi.csv")
         return JSONResponse(content={"esito": "ok"})
     except Exception as e:
         logging.error(f"Errore durante l'elaborazione: {e}")
