@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime
 import os
 
-from pipeline import elabora_pipeline  # ⬅️ nome funzione corretto
+from pipeline import esegui_analisi_completa  # Usa il nome reale presente nel tuo sistema
 
 app = FastAPI()
 
@@ -16,21 +16,21 @@ async def analizza_pdf(
     upload: UploadFile = Form(..., alias="upload-1")
 ):
     try:
-        # Crea cartella output/ se non esiste
+        # Cartella di salvataggio coerente con il sistema
         output_dir = Path("output")
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Salva il file come documento.pdf (fisso)
+        # Salva file sempre come documento.pdf
         upload_path = output_dir / "documento.pdf"
         with open(upload_path, "wb") as f:
             f.write(await upload.read())
 
-        # Avvia l’elaborazione coerente
-        elabora_pipeline(nome_azienda=name)  # ⬅️ variabile standard
+        # Lancia la pipeline con i nomi giusti
+        esegui_analisi_completa(upload_path, name)
 
         return JSONResponse(content={
             "status": "ok",
-            "message": "Dati ricevuti, analisi in corso"
+            "message": "Dati ricevuti, analisi avviata"
         })
 
     except Exception as e:
