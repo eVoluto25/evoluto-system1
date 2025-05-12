@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import os
 
-from pipeline import elabora_pipeline
+from pipeline import elabora_analisi_completa
 
 app = FastAPI()
 
