@@ -1,23 +1,28 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Carica le variabili d'ambiente dal file .env (se presente)
+# Carica variabili da .env (opzionale ma utile in ambienti locali o separati)
 load_dotenv()
 
-# === CONFIGURAZIONI DI BASE ===
-OUTPUT_DIR = "output"
-ALLEGATI_DIR = "allegati"
-BANDI_PATH = "bando_tracker/dataset_bandi.csv"
+# === 📍 API KEYS ===
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY") or "INSERISCI_LA_TUA_API_KEY_CLAUDE"
 
-# === CONFIGURAZIONE EMAIL ===
-EMAIL_MITTENTE = os.getenv("EMAIL_MITTENTE", "verifica.evoluto@gmail.com")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # App password per Gmail
-EMAIL_DESTINATARIO = os.getenv("EMAIL_DESTINATARIO", "info@capitaleaziendale.it")
+# === 📍 EMAIL CONFIG ===
+EMAIL_MITTENTE = "verifica.evoluto@gmail.com"
+EMAIL_DESTINATARIO = "info@capitaleaziendale.it"
+APP_PASSWORD_EMAIL = os.getenv("APP_PASSWORD_EMAIL") or "vvkj cybv njee qjts"  # Password per app Gmail
 
-# === CONFIGURAZIONE AI ===
-API_KEY_GPT = os.getenv("API_KEY_GPT")
-API_KEY_CLAUDE = os.getenv("API_KEY_CLAUDE")
+# === 📍 OUTPUT E FILE SYSTEM ===
+OUTPUT_DIR = Path("output")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# === IMPOSTAZIONI DI SERVIZIO ===
-DEFAULT_PERIODO_ANALISI = "Ultimo bilancio disponibile"
-MAX_FILE_SIZE_MB = 10
+PDF_SALVATO_PATH = OUTPUT_DIR / "documento.pdf"
+RELAZIONE_FINALE_PATH = OUTPUT_DIR / "relazione_finale.txt"
+ANALISI_GPT_PATH = OUTPUT_DIR / "output_gpt.txt"
+
+# === 📍 BANDI ===
+BANDI_CSV_PATH = Path("bandi_tracker") / "bandi.csv"  # Percorso predefinito ai bandi
+
+# === 📍 PARAMETRI DI SISTEMA ===
+DEFAULT_PERIODO = "ultimo bilancio disponibile"
