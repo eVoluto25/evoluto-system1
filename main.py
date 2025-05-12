@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "bandi_tracker"))
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
