@@ -1,8 +1,10 @@
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
+from datetime import datetime
 import os
-from pipeline import esegui_analisi_completa
+
+from pipeline import elabora_pipeline  # ⬅️ nome funzione corretto
 
 app = FastAPI()
 
@@ -13,55 +15,26 @@ async def analizza_pdf(
     email: str = Form(..., alias="email-1"),
     upload: UploadFile = Form(..., alias="upload-1")
 ):
-    # Salva il file
-    upload_path = Path("estratti_pdf") / upload.filename
-    with open(upload_path, "wb") as f:
-        f.write(await upload.read())
-
-    # Avvia l’analisi completa
-    output = esegui_analisi_completa(upload_path, name)
-
-    return JSONResponse(content={"status": "ok", "message": "Analisi ricevuta", "output": output})
-
-
-        # Logica temporanea per confermare ricezione
-        print("Ricevuto:", nome, email)
-
-        return {"status": "success", "message": "Dati ricevuti correttamente"}
-
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    Endpoint riceve PDF da Forminator e avvia l'analisi completa.
-    """
     try:
-        # Salva il file PDF nella directory degli estratti
-        input_path = Path("estratti_pdf") / f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}"
-        input_path.parent.mkdir(parents=True, exist_ok=True)
+        # Crea cartella output/ se non esiste
+        output_dir = Path("output")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(input_path, "wb") as f:
-            content = await file.read()
-            f.write(content)
+        # Salva il file come documento.pdf (fisso)
+        upload_path = output_dir / "documento.pdf"
+        with open(upload_path, "wb") as f:
+            f.write(await upload.read())
 
-        # Avvia l'analisi
-        output = esegui_analisi_completa(file_path=input_path, nome_azienda=nome_azienda)
+        # Avvia l’elaborazione coerente
+        elabora_pipeline(nome_azienda=name)  # ⬅️ variabile standard
 
-        return JSONResponse(content={"status": "ok", "output": output})
+        return JSONResponse(content={
+            "status": "ok",
+            "message": "Dati ricevuti, analisi in corso"
+        })
 
     except Exception as e:
-        return JSONResponse(status_code=500, content={"status": "error", "detail": str(e)})
-
-        @app.post("/")
-async def ricevi_dal_form_root(file: UploadFile = File(...), nome_azienda: str = Form(...)):
-    # fallback per i form che inviano su dominio root
-    print("Ricevuto file dal form root")
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    percorso_file = OUTPUT_DIR / file.filename
-    with open(percorso_file, "wb") as f:
-        f.write(await file.read())
-
-    print(f"File salvato in: {percorso_file}")
-
-    risultato = esegui_analisi_completa(percorso_file, nome_azienda)
-    print(f"Risultato analisi: {risultato}")
-
-    return JSONResponse(content={"esito": "ricevuto", "analisi": risultato})
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e)
+        })
