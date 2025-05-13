@@ -1,0 +1,36 @@
+name: Aggiornamento automatico dei bandi
+
+on:
+  schedule:
+    - cron: '0 3 */15 * *'  # Ogni 15 giorni alle 03:00 UTC
+  workflow_dispatch:        # Avvio manuale da GitHub se necessario
+
+jobs:
+  update-bandi:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Clona il repository
+      uses: actions/checkout@v3
+
+    - name: 🐍 Configura Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 📦 Installa le dipendenze
+      run: |
+        pip install -r requirements.txt
+
+    - name: 📊 Esegui aggiornamento bandi
+      run: |
+        python aggiorna_bandi.py
+
+    - name: 📤 Commit & push file aggiornato
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'actions@github.com'
+        git add dataset_bandi.csv
+        git commit -m '🤖 Update automatico bandi'
+        git push
+      continue-on-error: true  # Evita crash se nessuna modifica
