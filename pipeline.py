@@ -41,7 +41,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
 
     logging.info("📄 Salvataggio relazione finale")
     try:
-        relazione_finale = genera_relazione_con_claude(output_gpt)
+        relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
         with open("relazione_finale.txt", "w") as f:
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
