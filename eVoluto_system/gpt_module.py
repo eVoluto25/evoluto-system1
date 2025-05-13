@@ -6,7 +6,7 @@ from prompt_loader import prompt_gpt
 # Carica il file .env
 load_dotenv()
 
-# Imposta la chiave API
+# Inizializza la chiave API OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def analisi_tecnica_gpt(bilancio, visura, bandi):
@@ -16,8 +16,14 @@ def analisi_tecnica_gpt(bilancio, visura, bandi):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Sei un CFO esperto in analisi aziendale, merito creditizio e strategia."},
-                {"role": "user", "content": prompt}
+                {
+                    "role": "system",
+                    "content": "Sei un CFO esperto in analisi aziendale, merito creditizio e strategia."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ],
             temperature=0.5,
             max_tokens=1500
