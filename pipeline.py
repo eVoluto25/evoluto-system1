@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
 from analisi_blocchi_gpt import analisi_completa_multipla
@@ -17,37 +18,19 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.error(f"Errore durante l'estrazione del testo: {e}")
         return
 
-  logging.info("🧠 Verifica salvataggio analisi GPT...")
-cartella_blocchi = "blocchi_salvati"
+    logging.info("🧠 Verifica salvataggio analisi GPT...")
 
-if os.path.exists("output_gpt.txt"):
-    logging.info("📄 Analisi GPT già esistente, caricamento da file")
-    try:
-        with open("output_gpt.txt", "r") as f:
-            output_gpt = f.read()
-    except Exception as e:
-        logging.error(f"Errore durante la lettura di output_gpt.txt: {e}")
-        return
-
-elif os.path.exists(cartella_blocchi):
-    blocchi = sorted([f for f in os.listdir(cartella_blocchi) if f.startswith("blocco_")])
-    if blocchi:
-        logging.info("📦 Ricompongo output_gpt.txt dai blocchi salvati")
+    if os.path.exists("output_gpt.txt"):
+        logging.info("📄 Analisi GPT già esistente, caricamento da file")
         try:
-            contenuti = []
-            for file in blocchi:
-                with open(os.path.join(cartella_blocchi, file), "r", encoding="utf-8") as f:
-                    contenuti.append(f.read())
-            output_gpt = "\n\n".join(contenuti)
-            with open("output_gpt.txt", "w") as f:
-                f.write(output_gpt)
+            with open("output_gpt.txt", "r") as f:
+                output_gpt = f.read()
         except Exception as e:
-            logging.error(f"Errore durante la ricostruzione da blocchi: {e}")
+            logging.error(f"Errore durante la lettura di output_gpt.txt: {e}")
             return
     else:
-        logging.warning("⚠️ Nessun blocco trovato nella cartella, avvio GPT")
+        logging.info("🧠 Avvio analisi GPT")
         try:
-            logging.info("🧠 Avvio analisi GPT")
             output_gpt = analisi_completa_multipla(testo)
             logging.info("✅ Analisi GPT completata")
             with open("output_gpt.txt", "w") as f:
@@ -56,14 +39,28 @@ elif os.path.exists(cartella_blocchi):
             logging.error(f"Errore durante analisi_completa_multipla: {e}")
             return
 
-else:
-    logging.warning("📂 Cartella blocchi non trovata, avvio GPT")
+    logging.info("📄 Salvataggio relazione finale")
     try:
-        logging.info("🧠 Avvio analisi GPT")
-        output_gpt = analisi_completa_multipla(testo)
-        logging.info("✅ Analisi GPT completata")
-        with open("output_gpt.txt", "w") as f:
-            f.write(output_gpt)
+        relazione_finale = genera_relazione_con_claude(output_gpt)
+        with open("relazione_finale.txt", "w") as f:
+            f.write(relazione_finale)
+        logging.info("✅ Relazione finale salvata")
     except Exception as e:
-        logging.error(f"Errore durante analisi_completa_multipla: {e}")
+        logging.error(f"Errore durante la generazione della relazione finale: {e}")
+        return
+
+    logging.info("📥 Caricamento bandi")
+    try:
+        bandi = carica_bandi(csv_bandi_path)
+        logging.info(f"✅ {len(bandi)} bandi caricati")
+    except Exception as e:
+        logging.error(f"Errore durante il caricamento dei bandi: {e}")
+        return
+
+    logging.info("🔍 Filtro bandi compatibili")
+    try:
+        bandi_compatibili = filtra_bandi_compatibili(bandi, caratteristiche_impresa)
+        logging.info(f"✅ Trovati {len(bandi_compatibili)} bandi compatibili")
+    except Exception as e:
+        logging.error(f"Errore nel filtraggio dei bandi: {e}")
         return
