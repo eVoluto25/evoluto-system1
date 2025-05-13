@@ -3,7 +3,7 @@ import os
 import requests
 
 from estrazione_pdf import estrai_testo_da_pdf
-from gpt_module import analisi_completa_multipla
+from gpt_module import analisi_tecnica_gpt
 from claude_module import genera_relazione_con_claude
 from matching_bandi import carica_bandi, filtra_bandi_compatibili
 
@@ -37,7 +37,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             return
     else:
         try:
-            output_gpt = analisi_completa_multipla(testo)
+            output_gpt = analisi_tecnica_gpt(bilancio, visura, bandi)
             with open("output_gpt.txt", "w") as f:
                 f.write(output_gpt)
             logging.info("✅ Analisi GPT completata e salvata")
