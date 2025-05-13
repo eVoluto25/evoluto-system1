@@ -8,7 +8,7 @@ openai.api_key = OPENAI_API_KEY
 
 def analisi_tecnica_gpt(testo):
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Sei un analista finanziario esperto."},
             {"role": "user", "content": f"Analizza il seguente testo: {testo}"}
