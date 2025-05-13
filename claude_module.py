@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from prompt_loader import prompt_claude
 import anthropic
 
 # Costanti
@@ -14,7 +13,16 @@ client = anthropic.Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
 
 def genera_relazione_con_claude(bilancio, visura, bandi):
     try:
-        prompt = prompt_claude(bilancio, visura, bandi)
+        prompt = f"""
+OUTPUT GPT:
+{bilancio}
+
+VISURA CAMERALE:
+{visura}
+
+BANDI COMPATIBILI:
+{bandi}
+"""
 
         risposta = client.messages.create(
             model="claude-3-sonnet-20240229",
