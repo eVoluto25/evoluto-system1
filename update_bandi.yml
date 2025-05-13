@@ -2,7 +2,7 @@ name: Aggiornamento automatico dei bandi
 
 on:
   schedule:
-    - cron: '0 3 */15 * *'  # Ogni 15 giorni alle 03:00 UTC
+    - cron: '0 0 * * 0'  # Ogni domenica alle 00:00 UTC
   workflow_dispatch:        # Avvio manuale da GitHub se necessario
 
 jobs:
