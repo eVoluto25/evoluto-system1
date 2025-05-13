@@ -6,6 +6,7 @@ from gpt_module import analisi_tecnica_gpt
 from analisi_blocchi_gpt import analisi_completa_multipla
 from claude_module import genera_relazione_con_claude
 from matching_bandi import carica_bandi, filtra_bandi_compatibili
+from email_handler import invia_email
 
 def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     logging.info("🚀 Avviata esegui_analisi_completa()")
@@ -39,16 +40,6 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             logging.error(f"Errore durante analisi_completa_multipla: {e}")
             return
 
-    logging.info("📄 Salvataggio relazione finale")
-    try:
-        relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-        with open("relazione_finale.txt", "w") as f:
-            f.write(relazione_finale)
-        logging.info("✅ Relazione finale salvata")
-    except Exception as e:
-        logging.error(f"Errore durante la generazione della relazione finale: {e}")
-        return
-
     logging.info("📥 Caricamento bandi")
     try:
         bandi = carica_bandi(csv_bandi_path)
@@ -63,4 +54,23 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.info(f"✅ Trovati {len(bandi_compatibili)} bandi compatibili")
     except Exception as e:
         logging.error(f"Errore nel filtraggio dei bandi: {e}")
+        return
+
+    try:
+        logging.info("🧾 Generazione relazione con Claude")
+        relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+        with open("relazione_finale.txt", "w") as f:
+            f.write(relazione_finale)
+        logging.info("✅ Relazione finale salvata")
+
+        # Invia la relazione via email al gestore
+        invia_email(
+            destinatario="info@capitaleaziendale.it",
+            oggetto="Nuova relazione strategica generata da Claude",
+            corpo=relazione_finale
+        )
+        logging.info("📩 Relazione inviata a info@capitaleaziendale.it")
+
+    except Exception as e:
+        logging.error(f"Errore durante la generazione o invio della relazione finale: {e}")
         return
