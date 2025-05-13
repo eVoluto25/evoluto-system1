@@ -1,74 +1,62 @@
-import openai
-import tiktoken
 import logging
-import os
 import time
+import os
+from gpt_module import analisi_tecnica_gpt
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-def conta_token(testo, model="gpt-3.5-turbo"):
-    encoding = tiktoken.encoding_for_model(model)
-    return len(encoding.encode(testo))
-
-def dividi_in_blocchi(testo, max_token=10000, model="gpt-3.5-turbo"):
-    encoding = tiktoken.encoding_for_model(model)
-    tokens = encoding.encode(testo)
+# Suddivide il testo in blocchi da massimo 10000 caratteri
+def suddividi_in_blocchi(testo, dimensione_blocco=10000):
+    parole = testo.split()
     blocchi = []
-    for i in range(0, len(tokens), max_token):
-        blocco_token = tokens[i:i+max_token]
-        blocchi.append(encoding.decode(blocco_token))
+    blocco_corrente = []
+    caratteri_correnti = 0
+
+    for parola in parole:
+        if caratteri_correnti + len(parola) + 1 <= dimensione_blocco:
+            blocco_corrente.append(parola)
+            caratteri_correnti += len(parola) + 1
+        else:
+            blocchi.append(" ".join(blocco_corrente))
+            blocco_corrente = [parola]
+            caratteri_correnti = len(parola) + 1
+
+    if blocco_corrente:
+        blocchi.append(" ".join(blocco_corrente))
+
     return blocchi
 
-def analizza_blocco(blocco_testo, numero, totale):
-    prompt = f"""
-Questa è la parte {numero} di {totale} del bilancio aziendale. Analizza solo questa sezione e concentrati su:
-- andamento economico e finanziario
-- segnali di rischio
-- indicatori di solidità o debolezza
-Attendi le altre parti per l’analisi complessiva.
-"""
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Sei un analista finanziario esperto."},
-            {"role": "user", "content": prompt + "\n\n" + blocco_testo}
-        ],
-        temperature=0.3,
-        max_tokens=1500
-    )
-    return response.choices[0].message["content"]
+# Analisi GPT su tutti i blocchi
 
-def sintetizza_blocchi(analisi_blocchi):
-    joined_text = "\n\n".join(analisi_blocchi)
-    prompt_finale = """
-Hai ricevuto l’analisi delle sezioni di un bilancio aziendale. Ora uniscile in una relazione unica che:
-- riassuma i punti salienti
-- evidenzi criticità, margini, solidità o squilibri
-- suggerisca 3 azioni strategiche per migliorare la gestione.
-"""
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Sei un analista finanziario professionale."},
-            {"role": "user", "content": prompt_finale + "\n\n" + joined_text}
-        ],
-        temperature=0.3,
-        max_tokens=2000
-    )
-    return response.choices[0].message["content"]
-
-def analisi_completa_multipla(testo_lungo):
-    logging.info("🚀 Avvio segmentazione e analisi GPT")
-    blocchi = dividi_in_blocchi(testo_lungo)
+def analisi_completa_multipla(testo):
+    blocchi = suddividi_in_blocchi(testo)
     logging.info(f"📦 Diviso in {len(blocchi)} blocchi")
 
-    analisi_blocchi = []
-    for i, blocco in enumerate(blocchi):
-        logging.info(f"🔍 Analisi blocco {i+1}/{len(blocchi)}")
-        output = analizza_blocco(blocco, i+1, len(blocchi))
-        analisi_blocchi.append(output)
-        time.sleep(2)  # Delay di sicurezza per evitare il rate limit
+    risultati = []
+    cartella_blocchi = "blocchi_salvati"
+    os.makedirs(cartella_blocchi, exist_ok=True)
 
-    logging.info("🧠 Sintesi finale in corso...")
-    sintesi = sintetizza_blocchi(analisi_blocchi)
-    return sintesi
+    for i, blocco in enumerate(blocchi):
+        nome_file = os.path.join(cartella_blocchi, f"blocco_{i+1}.txt")
+
+        if os.path.exists(nome_file):
+            logging.info(f"🔁 Blocco {i+1}/{len(blocchi)} già elaborato, salto.")
+            with open(nome_file, "r", encoding="utf-8") as f:
+                risultati.append(f.read())
+            continue
+
+        try:
+            logging.info(f"🧠 Analisi blocco {i+1}/{len(blocchi)}")
+            risposta = analisi_tecnica_gpt(blocco)
+            risultati.append(risposta)
+            with open(nome_file, "w", encoding="utf-8") as f:
+                f.write(risposta)
+            time.sleep(2)  # Delay di sicurezza per evitare il rate limit
+        except Exception as e:
+            logging.error(f"❌ Errore nel blocco {i+1}: {e}")
+            break
+
+    return "\n\n".join(risultati)
+
+# Sintesi finale (opzionale per ridurre tokens)
+def sintetizza_blocchi(analisi_blocchi):
+    # Da usare se vuoi fare sintesi dopo i blocchi
+    pass
