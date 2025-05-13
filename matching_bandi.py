@@ -1,3 +1,8 @@
+import pandas as pd
+
+def carica_bandi(csv_path):
+    return pd.read_csv(csv_path)
+    
 # Mappatura coerente delle colonne CSV per i bandi pubblici
 COLONNE_BANDI = {
     "titolo": "Titolo",
