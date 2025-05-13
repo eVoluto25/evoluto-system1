@@ -25,9 +25,15 @@
 
 ---
 
-## 🔄 Aggiornamento automatico bandi
+## 🗂️ Aggiornamento automatico bandi
 
-![Aggiornamento bandi](https://github.com/matteoparis/evoluto/actions/workflows/update_bandi.yml/badge.svg)
+![🔁 Workflow GitHub](https://github.com/matteoparis/evoluto/actions/workflows/update_bandi.yml/badge.svg)
+![🕒 Ultimo aggiornamento](https://img.shields.io/github/last-commit/eVoluto25/evoluto-system1/dataset_bandi.csv?label=Ultimo%20aggiornamento%20dataset_bandi.csv)
+
+Il sistema estrae periodicamente nuovi bandi dalle seguenti fonti ufficiali:
+
+- [Incentivi.gov – Portale ufficiale open data](https://www.incentivi.gov.it/it/open-data)
+- [PONIC.gov – Open data progetti e incentivi](https://www.ponic.gov.it/open-data/datasets)
 
 Il sistema estrae periodicamente nuovi bandi dalle seguenti fonti ufficiali:
 
