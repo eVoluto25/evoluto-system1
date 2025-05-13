@@ -41,7 +41,9 @@ def genera_relazione_con_claude(output_gpt, bandi_compatibili):
         )
 
         logging.info("✅ Risposta Claude ricevuta")
-        return risposta.content[0].text.strip()
+        MAX_CARATTERI = 8000
+    risposta_finale = risposta[:MAX_CARATTERI]
+    return risposta_finale.content[0].text.strip()
 
     except Exception as e:
         logging.error(f"Errore durante la generazione relazione con Claude: {e}")
