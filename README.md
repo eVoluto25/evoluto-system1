@@ -33,14 +33,8 @@
 Il sistema estrae periodicamente nuovi bandi dalle seguenti fonti ufficiali:
 
 - [Incentivi.gov – Portale ufficiale open data](https://www.incentivi.gov.it/it/open-data)
-- [PONIC.gov – Open data progetti e incentivi](https://www.ponic.gov.it/open-data/datasets)
 
-Il sistema estrae periodicamente nuovi bandi dalle seguenti fonti ufficiali:
-
-- [Incentivi.gov – Portale ufficiale open data](https://www.incentivi.gov.it/it/open-data)
-- [PON Governance – Dataset pubblici](https://www.ponic.gov.it/open-data/datasets)
-
-Ogni 15 giorni, un job automatico GitHub Actions esegue lo script `aggiorna_bandi.py`, che aggiorna `dataset_bandi.csv` in base ai file più recenti disponibili online.
+Ogni 7 giorni, un job automatico GitHub Actions esegue lo script `aggiorna_bandi.py`, che aggiorna `dataset_bandi.csv` in base ai file più recenti disponibili online.
 
 ---
 
