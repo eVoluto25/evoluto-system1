@@ -1,8 +1,8 @@
 # gpt_module.py
-from openai import OpenAI
+from openai import openai
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai(api_key=os.getenv("OPENAI_API_KEY"))
 
 def analisi_tecnica_gpt(testo):
     response = client.chat.completions.create(
