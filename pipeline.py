@@ -4,7 +4,7 @@ from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
 from analisi_blocchi_gpt import analisi_completa_multipla
 from claude_module import genera_relazione_con_claude
-from matching_bandi import filtra_bandi_compatibili
+from matching_bandi import carica_bandi, filtra_bandi_compatibili
 
 def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     logging.info("🚀 Avviata esegui_analisi_completa()")
