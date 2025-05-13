@@ -4,19 +4,18 @@ import requests
 
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_completa_multipla
-from analisi_blocchi_gpt import analisi_completa_multipla
 from claude_module import genera_relazione_con_claude
 from matching_bandi import carica_bandi, filtra_bandi_compatibili
 
 def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     logging.info("🚀 Avvio esegui_analisi_completa")
 
-    # ✅ Controllo file PDF
+    # 📄 Verifica esistenza file
     if not os.path.exists(file_path):
         logging.error(f"❌ File non trovato: {file_path}")
         return
 
-    # ✅ Estrazione testo
+    # 📄 Estrazione testo da PDF
     try:
         testo = estrai_testo_da_pdf(file_path)
         if not testo or len(testo.strip()) < 100:
@@ -27,7 +26,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.error(f"❌ Errore estrazione testo da PDF: {e}")
         return
 
-    # ✅ Analisi GPT
+    # 🤖 Analisi GPT: se già esiste, riusa
     if os.path.exists("output_gpt.txt"):
         try:
             with open("output_gpt.txt", "r") as f:
@@ -46,7 +45,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             logging.error(f"❌ Errore GPT: {e}")
             return
 
-    # ✅ Caricamento bandi
+    # 🗂 Caricamento bandi
     try:
         bandi = carica_bandi(csv_bandi_path)
         if not bandi:
@@ -57,7 +56,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.error(f"❌ Errore caricamento CSV bandi: {e}")
         return
 
-    # ✅ Filtro bandi compatibili
+    # 🎯 Filtro bandi compatibili
     try:
         bandi_compatibili = filtra_bandi_compatibili(bandi, caratteristiche_impresa)
         if not bandi_compatibili:
@@ -68,10 +67,11 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.error(f"❌ Errore nel filtro bandi compatibili: {e}")
         return
 
-    # ✅ Generazione relazione Claude
+    # 📄 Generazione relazione finale con Claude
     try:
         logging.info("📄 Generazione relazione conclusiva")
         relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+
         if not relazione_finale or len(relazione_finale.strip()) < 100:
             logging.error("❌ Relazione finale vuota o troppo breve.")
             return
@@ -80,7 +80,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
 
-        # ✅ Invio a Make
+        # 📤 Invio via Make
         try:
             webhook_url = "https://hook.eu2.make.com/45pk0gb25uz3twjk3jzpu2eef8fg75w8"
             payload = {'relazione_finale': relazione_finale}
