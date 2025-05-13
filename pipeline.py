@@ -13,6 +13,9 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         logging.info("📄 Estrazione testo PDF")
         testo = estrai_testo_da_pdf(file_path)
         logging.info("✅ Testo estratto")
+    except Exception as e:
+    logging.error(f"Errore durante l'estrazione del testo: {e}")
+    return
 
 import os
 
