@@ -9,3 +9,4 @@ openai==0.28
 fastapi
 python-multipart
 anthropic
+tiktoken
