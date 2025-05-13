@@ -1,12 +1,12 @@
 import logging
 import os
-import requests
 
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
 from analisi_blocchi_gpt import analisi_completa_multipla
 from claude_module import genera_relazione_con_claude
 from matching_bandi import carica_bandi, filtra_bandi_compatibili
+from email_handler import invia_email
 
 def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     logging.info("🚀 Avviata esegui_analisi_completa()")
@@ -63,24 +63,14 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
 
-        # ✅ Invio relazione finale a Make
-        try:
-            if relazione_finale and relazione_finale.strip():
-                webhook_url = "https://hook.eu2.make.com/45pk0gb25uz3twjk3jzpu2eef8fg75w8"
-                payload = {
-                    'outputClaude': relazione_finale
-                }
-                response = requests.post(webhook_url, json=payload)
-
-                if response.status_code == 200:
-                    logging.info("✅ Relazione finale inviata a Make")
-                else:
-                    logging.error(f"❌ Errore nell'invio a Make: {response.status_code} - {response.text}")
-            else:
-                logging.warning("⚠️ Nessuna relazione finale da inviare a Make")
-        except Exception as e:
-            logging.error(f"❌ Errore durante l'invio a Make: {e}")
+        # Invia la relazione via email al gestore
+        invia_email(
+            destinatario="info@capitaleaziendale.it",
+            oggetto="Nuova relazione strategica generata da Claude",
+            corpo=relazione_finale
+        )
+        logging.info("📩 Relazione inviata a info@capitaleaziendale.it")
 
     except Exception as e:
-        logging.error(f"Errore durante la generazione o gestione della relazione finale: {e}")
+        logging.error(f"Errore durante la generazione o invio della relazione finale: {e}")
         return
