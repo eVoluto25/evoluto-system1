@@ -6,7 +6,7 @@ from prompt_loader import prompt_gpt
 # Carica il file .env
 load_dotenv()
 
-# Inizializza la chiave API OpenAI
+# Inizializza la chiave API openai
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def analisi_tecnica_gpt(bilancio, visura, bandi):
