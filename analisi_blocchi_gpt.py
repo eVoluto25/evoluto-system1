@@ -2,6 +2,7 @@ import openai
 import tiktoken
 import logging
 import os
+import time
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -66,6 +67,7 @@ def analisi_completa_multipla(testo_lungo):
         logging.info(f"🔍 Analisi blocco {i+1}/{len(blocchi)}")
         output = analizza_blocco(blocco, i+1, len(blocchi))
         analisi_blocchi.append(output)
+        time.sleep(2)  # Delay di sicurezza per evitare il rate limit
 
     logging.info("🧠 Sintesi finale in corso...")
     sintesi = sintetizza_blocchi(analisi_blocchi)
