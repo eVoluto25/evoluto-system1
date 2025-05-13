@@ -1,52 +1,48 @@
+import logging
 import os
 import anthropic
-from dotenv import load_dotenv
+import json
 
-load_dotenv()
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+# Inizializza il client Claude
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-def prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi):
-    return f"""
-Sintesi dell'analisi tecnica (GPT):
+def genera_relazione_con_claude(output_gpt, bandi_compatibili):
+    try:
+        # Carica il prompt base
+        with open("prompt_claude.txt", "r", encoding="utf-8") as f:
+            prompt_base = f.read()
+
+        # Prepara il testo dei bandi in formato leggibile
+        testo_bandi = json.dumps(bandi_compatibili, indent=2, ensure_ascii=False)
+
+        # Costruisce il prompt finale
+        full_prompt = f"""{prompt_base}
+
+-------------------
+📊 ANALISI GPT:
 {output_gpt}
 
-Ora integra queste informazioni e fornisci una visione strategica completa, strutturata nei seguenti punti:
-
-1. Interpretazione tecnica sintetica e operativa del bilancio e della visura (in base ai dati ricevuti).
-
-2. Analisi degli investimenti previsti:
-   – Preventivi ricevuti:
-{preventivi}
-   – Piano di ammortamento stimato:
-{piano_ammortamento}
-
-3. Matching con le opportunità attualmente disponibili:
-   – Esegui un confronto intelligente tra le caratteristiche dell’azienda e i seguenti bandi disponibili:
-{bandi}
-
-   – Per ciascun bando:
-     • Verifica se è compatibile in base a:
-       – Forma di agevolazione
-       – Territorio di applicazione
-       – Beneficiari ammessi
-       – Finalità dell’incentivo
-     • Indica il beneficio economico ottenibile e se l’intervento è cumulabile
-     • Spiega il vantaggio competitivo per l’azienda
-
-Obiettivo:
-– Evidenzia le opportunità strategiche e concrete per rafforzare la solidità economica e finanziaria.
-– Includi eventuali interventi correttivi, suggerimenti pratici e leve gestionali per migliorare margini, rating, fiscalità e accesso al credito.
-
-Scrivi in modo chiaro, concreto, professionale e orientato all’azione. Niente teoria, solo ciò che serve all’imprenditore.
+-------------------
+📌 BANDI COMPATIBILI:
+{testo_bandi}
 """
 
-def genera_relazione_con_claude(output_gpt, preventivi, piano_ammortamento, bandi):
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-    response = client.messages.create(
-        model="claude-3-opus-20240229",
-        max_tokens=4000,
-        temperature=0.5,
-        system="Sei un analista finanziario esperto.",
-        messages=[{"role": "user", "content": prompt_claude(output_gpt, preventivi, piano_ammortamento, bandi)}]
-    )
-    return response.content[0].text.strip()
+        # Chiamata a Claude 3 con impostazioni ottimali
+        risposta = client.messages.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens=2000,
+            temperature=0.5,
+            messages=[
+                {
+                    "role": "user",
+                    "content": full_prompt
+                }
+            ]
+        )
+
+        logging.info("✅ Risposta Claude ricevuta")
+        return risposta.content[0].text.strip()
+
+    except Exception as e:
+        logging.error(f"Errore durante la generazione relazione con Claude: {e}")
+        return "Errore nella generazione della relazione con Claude."
