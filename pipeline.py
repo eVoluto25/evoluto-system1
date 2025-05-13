@@ -14,9 +14,20 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         testo = estrai_testo_da_pdf(file_path)
         logging.info("✅ Testo estratto")
 
-        logging.info("🧠 Avvio analisi GPT")
-        output_gpt = analisi_completa_multipla(testo)
-        logging.info("✅ Analisi GPT completata")
+import os
+
+logging.info("🧠 Verifica salvataggio analisi GPT...")
+
+if os.path.exists("output_gpt.txt"):
+    logging.info("📄 Analisi GPT già esistente, caricamento da file")
+    with open("output_gpt.txt", "r") as f:
+        output_gpt = f.read()
+else:
+    logging.info("🧠 Avvio analisi GPT")
+    output_gpt = analisi_completa_multipla(testo)
+    with open("output_gpt.txt", "w") as f:
+        f.write(output_gpt)
+    logging.info("✅ Analisi GPT completata e salvata")
 
         logging.info("📥 Caricamento bandi")
         bandi = carica_bandi(csv_bandi_path)
