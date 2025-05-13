@@ -1,6 +1,5 @@
 {
-  "urls": [
-    "https://www.incentivi.gov.it/it/open-data",
-    "https://www.ponic.gov.it/open-data/datasets"
+  "url": [
+    "https://www.incentivi.gov.it/it/open-data"
   ]
 }
