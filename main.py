@@ -31,7 +31,7 @@ async def analizza_pdf(
         with open(path, "wb") as f:
             f.write(await upload.read())
         logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
-        esegui_analisi_completa(path, {"nome": name, "email": email, "telefono": phone}, "bandi.csv")
+        esegui_analisi_completa(path, {"nome": name, "email": email, "telefono": phone}, "dataset_bandi.csv")
         return JSONResponse(content={"esito": "ok"})
     except Exception as e:
         logging.error(f"Errore durante l'elaborazione: {e}")
