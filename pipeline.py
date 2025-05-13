@@ -1,3 +1,4 @@
+from claude_prompt_bandi import genera_paragrafo_bandi_claude
 import logging
 from estrazione_pdf import estrai_testo_da_pdf
 from gpt_module import analisi_tecnica_gpt
