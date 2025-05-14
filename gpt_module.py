@@ -1,46 +1,79 @@
 import os
-import openai
-from dotenv import load_dotenv
 import logging
+import openai
+from output_uploader import salva_output_html
+from env_loader import carica_variabili_ambiente
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+def analizza_con_gpt(dati):
+    logging.info("🧠 [GPT] Inizio analisi GPT-3.5")
 
-def dividi_blocchi(testo, max_caratteri=3000):
-    parole = testo.split()
-    blocchi, blocco_corrente = [], []
-    lunghezza_corrente = 0
+    config = carica_variabili_ambiente()
+    openai.api_key = config["OPENAI_API_KEY"]
 
-    for parola in parole:
-        if lunghezza_corrente + len(parola) + 1 <= max_caratteri:
-            blocco_corrente.append(parola)
-            lunghezza_corrente += len(parola) + 1
-        else:
-            blocchi.append(" ".join(blocco_corrente))
-            blocco_corrente = [parola]
-            lunghezza_corrente = len(parola) + 1
+    prompt = crea_prompt_gpt(dati)
 
-    if blocco_corrente:
-        blocchi.append(" ".join(blocco_corrente))
+    logging.info("👉 [GPT] Prompt inviato a GPT:")
+    logging.info(prompt)
 
-    return blocchi
+    try:
+        risposta = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            temperature=0.3,
+            max_tokens=1800,
+            messages=[
+                {"role": "system", "content": "Sei un CFO esperto in analisi di bilancio. Analizza solidità, sostenibilità e redditività aziendale."},
+                {"role": "user", "content": prompt}
+            ]
+        )
 
-def analisi_completa_multipla(testo):
-    blocchi = dividi_blocchi(testo)
-    risultati = []
+        logging.info("✅ [GPT] Risposta API ricevuta:")
+        logging.info(str(risposta))
 
-    for i, blocco in enumerate(blocchi):
-        logging.info(f"\U0001f9e0 GPT - Invio blocco {i+1} di {len(blocchi)}")
-        try:
-            risposta = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": blocco}
-                ]
-            )
-            risultati.append(risposta.choices[0].message.content)
-        except Exception as e:
-            logging.error(f"Errore nel blocco {i+1}: {e}")
-            break
+        contenuto = risposta['choices'][0]['message']['content']
 
-    return "\n\n".join(risultati)
+        if not contenuto or contenuto.strip() == "":
+            raise ValueError("GPT ha restituito una risposta vuota.")
+
+        url_html = salva_output_html("Analisi_finanziaria_GPT", contenuto)
+        logging.info(f"✅ [GPT] Report HTML salvato: {url_html}")
+        return url_html
+
+    except Exception as e:
+        logging.error(f"❌ [GPT] Errore durante la generazione GPT: {e}")
+        return None
+
+def crea_prompt_gpt(dati):
+    return f"""Analizza i seguenti dati di bilancio (ultimi disponibili):
+
+Forma giuridica: {dati.get('forma_giuridica')}
+Attività prevalente: {dati.get('attivita_prevalente')}
+Codice ATECO: {dati.get('codice_ateco')}
+
+Dati economici:
+- Ricavi: {dati.get('ricavi')}
+- Utile netto: {dati.get('utile_netto')}
+- EBITDA: {dati.get('ebitda')}
+- Attivo totale: {dati.get('attivo_totale')}
+- Patrimonio netto: {dati.get('patrimonio_netto')}
+- Debiti finanziari: {dati.get('debiti_finanziari')}
+- Oneri finanziari: {dati.get('oneri_finanziari')}
+- Debiti verso fornitori: {dati.get('debiti_fornitori')}
+- Rimanenze: {dati.get('rimanenze')}
+- Liquidità: {dati.get('liquidita')}
+- Ammortamenti: {dati.get('ammortamenti')}
+- Flusso di cassa operativo: {dati.get('cfo')}
+- Rata annua prevista (eventuale prestito): {dati.get('rata_annua')}
+
+Calcola e commenta:
+- ROE
+- ROI
+- ROS
+- DSCR
+- Current Ratio
+- Equity Ratio
+- Incidenza oneri finanziari
+- Copertura investimenti
+- Incidenza rimanenze
+- Copertura debiti fornitori
+
+Fornisci una relazione chiara, utile all’imprenditore per capire la salute finanziaria aziendale."
