@@ -8,8 +8,9 @@ def estrai_dati_da_pdf(percorso_pdf):
         with fitz.open(percorso_pdf) as doc:
             testo = ""
             for pagina in doc:
-                testo += pagina.get_text()
+                testo += pagina.get_text("text")  # forzatura modalità text
 
+        logging.info(f"📏 Lunghezza testo PDF: {len(testo)}")
         logging.info(f"📄 Testo PDF estratto (prime 800c):\n{text[:800]}")
     except Exception as e:
         logging.error(f"❌ Errore apertura PDF: {e}")
