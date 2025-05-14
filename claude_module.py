@@ -39,4 +39,4 @@ BANDI COMPATIBILI:
 
     except Exception as e:
         print("Errore durante la generazione della relazione con Claude:", e)
-        return "Errore durante la generazione della relazione"
+        return "Errore durante la generazione della relazione con Claude"
