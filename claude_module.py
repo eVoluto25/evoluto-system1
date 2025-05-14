@@ -23,8 +23,9 @@ VISURA CAMERALE:
 BANDI COMPATIBILI:
 {bandi}
 """
-
+        logging.info("🧾 Prompt Claude:\n"
         risposta = client.messages.create(
+        logging.info("✅ Claude ha restituito la relazione.")
             model="claude-3-sonnet-20240229",
             max_tokens=MAX_CARATTERI,
             temperature=0.6,
