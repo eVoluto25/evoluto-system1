@@ -21,19 +21,17 @@ def filtra_bandi_compatibili(bandi, caratteristiche_impresa):
             continue
 
         try:
-            territorio = bando.get("territorio", "").lower()
-            beneficiari = bando.get("beneficiari", "").lower()
-            finalita = bando.get("finalita", "").lower()
+            forma = bando.get("forma_giuridica", "").lower()
+            ateco = bando.get("codice_ateco", "").lower()
+            attivita = bando.get("attivita_prevalente", "").lower()
 
             if (
-                caratteristiche_impresa.get("territorio", "").lower() in territorio
-                and caratteristiche_impresa.get("forma_giuridica", "").lower() in beneficiari
-                and caratteristiche_impresa.get("obiettivo", "").lower() in finalita
+                caratteristiche_impresa.get("forma_giuridica", "").lower() in forma and
+                caratteristiche_impresa.get("codice_ateco", "").lower() in ateco and
+                caratteristiche_impresa.get("attivita_prevalente", "").lower() in attivita
             ):
                 bandi_compatibili.append(bando)
         except Exception as e:
-            logging.error(f"Errore nel filtraggio dei bandi: {e}")
-            continue
+            logging.error(f"Errore nel filtraggio: {e}")
 
-    logging.info(f"✅ Trovati {len(bandi_compatibili)} bandi compatibili")
     return bandi_compatibili
