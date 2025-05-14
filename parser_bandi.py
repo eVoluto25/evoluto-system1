@@ -1,9 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-import csv
-import os
-from urllib.parse import urljoin
-
 CONFIG_FILE = "config_siti_bandi.json"
 OUTPUT_FILE = "dataset_bandi.csv"
 
