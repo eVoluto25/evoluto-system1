@@ -1,88 +1,41 @@
-from fastapi import FastAPI, Form, UploadFile
-from fastapi.responses import JSONResponse
 import logging
-import os
-from datetime import datetime
-from pathlib import Path
+import sys
+from fastapi import FastAPI, UploadFile, Form
+from fastapi.responses import JSONResponse
+import uvicorn
 from pipeline import esegui_pipeline
-from claude_module import analizza_con_claude
+import os
 
+logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-# ✅ Health check semplice
-@app.api_route("/", methods=["GET", "HEAD"])
-def root():
-    return {"status": "ok"}
+# CLI fallback
+def avvia_analisi_da_terminale():
+    if len(sys.argv) != 3:
+        print("Uso: python main.py <percorso_pdf> <email_destinatario>")
+        return
+    percorso = sys.argv[1]
+    email = sys.argv[2]
+    logging.info(f"▶️ Avvio pipeline da terminale con: {percorso}, {email}")
+    esegui_pipeline(percorso, email)
 
-# ✅ Endpoint principale di analisi
+# API endpoint
 @app.post("/analizza-pdf")
-async def analizza_pdf(
-    name: str = Form(..., alias="name_2"),
-    phone: str = Form(..., alias="phone_1"),
-    email: str = Form(..., alias="email_1"),
-    upload: UploadFile = Form(..., alias="upload_1")
-):
+async def analizza_pdf(file: UploadFile, email: str = Form(...)):
     try:
-        # Salvataggio file
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"{timestamp}_{upload.filename}"
-        upload_folder = Path("uploads")
-        upload_folder.mkdir(parents=True, exist_ok=True)
-        path = upload_folder / filename
-
-        with open(path, "wb") as f:
-            f.write(await upload.read())
-
-        logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
-
-        # Verifica se esiste già la relazione Claude
-        if os.path.exists("relazione_finale.txt"):
-            logging.info("📄 Relazione Claude già presente, lettura da file")
-            with open("relazione_finale.txt", "r") as f:
-                relazione_finale = f.read()
-        else:
-            logging.info("🧠 Generazione relazione con Claude")
-            output_gpt = None  # 🔐 Inizializza variabile
-
-            if os.path.exists("output_gpt.txt"):
-                with open("output_gpt.txt", "r") as f:
-                    output_gpt = f.read()
-
-            if not output_gpt:
-                logging.error("❌ GPT non generato o vuoto, interrotto flusso Claude.")
-                return JSONResponse(
-                    content={"esito": "errore", "dettaglio": "output_gpt non disponibile"},
-                    status_code=500
-                )
-
-            relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-
-            with open("relazione_finale.txt", "w") as f:
-                f.write(relazione_finale)
-
-            logging.info("✅ Relazione Claude completata e salvata")
-
-        output_gpt = None
-
-        if os.path.exists("output_gpt.txt"):
-            logging.info("📄 Analisi GPT già presente, lettura da file")
-            with open("output_gpt.txt", "r") as f:
-                output_gpt = f.read()
-        else:
-            logging.info("🧠 Avvio analisi GPT")
-            output_gpt = esegui_analisi_completa(path)
-
-            with open("output_gpt.txt", "w") as f:
-                f.write(output_gpt)
-
-            logging.info("✅ Analisi GPT completata e salvata")
-
-        return JSONResponse(content={
-            "esito": "ok",
-            "relazione": relazione_finale,
-            "gpt": output_gpt
-        })
-
+        nome_file = f"temp_{file.filename}"
+        with open(nome_file, "wb") as f:
+            f.write(await file.read())
+        logging.info(f"📥 File ricevuto via API: {nome_file}, email: {email}")
+        esegui_pipeline(nome_file, email)
+        return JSONResponse(content={"status": "ok", "file": nome_file})
     except Exception as e:
-        logging.error(f"Errore durante l'elaborazione: {e}")
-        return JSONResponse(content={"esito": "errore", "dettaglio": str(e)}, status_code=500)
+        logging.error(f"❌ Errore endpoint /analizza-pdf: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+# Auto-avvio da CLI se eseguito direttamente
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        avvia_analisi_da_terminale()
+    else:
+        uvicorn.run("main:app", host="0.0.0.0", port=10000)
