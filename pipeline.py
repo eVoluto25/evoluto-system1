@@ -1,60 +1,72 @@
 import logging
-from analisi_blocchi_gpt import genera_analisi_gpt
-from analisi_claude import genera_relazione_con_claude
-from estrattore_pdf import estrai_testo_da_pdf
-from email_handler import invia_email
+from extractor import estrai_dati_da_pdf
+from gpt_module import analizza_con_gpt
+from matching_bandi import confronta_con_bandi
+from claude_module import analizza_con_claude
 from output_uploader import salva_output_html
+from email_handler import invia_email
+from scarica_bandi import aggiorna_bandi
+from env_loader import carica_variabili_ambiente
 
-def esegui_analisi_completa(percorso_pdf, destinatario_email):
-    logging.info("📥 Inizio analisi per: " + percorso_pdf)
+def esegui_pipeline(percorso_pdf, email_destinatario):
+    logging.info("🚀 Inizio pipeline completa")
 
     try:
-        dati_estratti = estrai_testo_da_pdf(percorso_pdf)
-        logging.info("✅ Testo estratto dalla visura")
+        logging.info("📥 Estrazione dati da visura PDF")
+        caratteristiche_azienda, bilancio = estrai_dati_da_pdf(percorso_pdf)
     except Exception as e:
-        logging.error(f"❌ Errore estrazione PDF: {e}")
+        logging.error(f"❌ Errore durante l'estrazione dati: {e}")
         return
 
     try:
-        output_gpt = genera_analisi_gpt(dati_estratti)
-        logging.info("✅ Analisi GPT completata")
+        logging.info("🔄 Aggiornamento bandi pubblici")
+        aggiorna_bandi()
     except Exception as e:
-        logging.error(f"❌ Errore generazione GPT: {e}")
+        logging.warning(f"⚠️ Impossibile aggiornare bandi: {e}")
+
+    try:
+        logging.info("🧠 Analisi GPT in corso...")
+        analisi_finanziaria = analizza_con_gpt(bilancio)
+    except Exception as e:
+        logging.error(f"❌ Errore GPT: {e}")
         return
 
     try:
-        relazione_finale = genera_relazione_con_claude(dati_estratti, output_gpt)
-        logging.info("✅ Relazione Claude completata")
+        logging.info("🔎 Matching tecnico bandi")
+        bandi_compatibili = confronta_con_bandi(caratteristiche_azienda)
     except Exception as e:
-        logging.error(f"❌ Errore Claude: {e}")
+        logging.error(f"❌ Errore matching bandi: {e}")
         return
 
     try:
-        url_html_gpt = salva_output_html("Analisi finanziaria GPT", output_gpt)
+        logging.info("🤖 Claude in esecuzione per analisi finale")
+        risposta_claude = analizza_con_claude(caratteristiche_azienda, analisi_finanziaria, bandi_compatibili)
     except Exception as e:
-        logging.error(f"❌ Errore salvataggio HTML GPT: {e}")
+        logging.error(f"❌ Claude fallito: {e}")
         return
 
     try:
-        url_html_claude = salva_output_html("Matching bandi Claude", relazione_finale)
+        logging.info("💾 Salvataggio HTML GPT e Claude")
+        url_html_gpt = salva_output_html("Analisi finanziaria GPT", analisi_finanziaria)
+        url_html_claude = salva_output_html("Matching bandi Claude", risposta_claude)
     except Exception as e:
-        logging.error(f"❌ Errore salvataggio HTML Claude: {e}")
+        logging.error(f"❌ Errore salvataggio output: {e}")
         return
 
-    corpo_email = f"""Gentile cliente,
+    corpo_email = f"""Gentile imprenditore,
 
 📊 Analisi finanziaria GPT:
 {url_html_gpt}
 
-🎯 Opportunità e bandi compatibili (Claude):
+🎯 Opportunità da bandi pubblici (Claude):
 {url_html_claude}
 
-Cordiali saluti,  
-Il team eVoluto
-"""
+Cordiali saluti,
+Il team
+"""  # chiusura corretta
 
     try:
-        invia_email(destinatario_email, "Esito Verifica Aziendale", corpo_email)
+        invia_email(email_destinatario, "Risultati Analisi Aziendale", corpo_email)
         logging.info("📤 Email inviata con successo")
     except Exception as e:
-        logging.error(f"❌ Errore invio email: {e}")
+        logging.error(f"❌ Invio email fallito: {e}")
