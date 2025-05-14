@@ -20,8 +20,12 @@ def avvia_analisi_da_terminale():
     esegui_pipeline(percorso, email)
 
 # API endpoint
+from fastapi import File  # aggiungi se non presente
+
 @app.post("/analizza-pdf")
-async def analizza_pdf(file: UploadFile, email: str = Form(...)):
+async def analizza_pdf(upload_1: UploadFile = File(...), email: str = Form(...)):
+    file = upload_1  # alias interno per mantenere compatibilità
+    
     try:
         nome_file = f"temp_{file.filename}"
         with open(nome_file, "wb") as f:
