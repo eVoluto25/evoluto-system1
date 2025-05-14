@@ -56,6 +56,10 @@ async def analizza_pdf(
         else:
             logging.info("🧠 Avvio analisi GPT")
             output_gpt = analisi_completa_multipla(path)
+
+            if not output_gpt:
+                raise ValueError("Errore: output_gpt non generato correttamente")
+    
             with open("output_gpt.txt", "w") as f:
                 f.write(output_gpt)
             logging.info("✅ Analisi GPT completata e salvata")
