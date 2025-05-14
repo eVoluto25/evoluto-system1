@@ -4,11 +4,12 @@ import re
 import logging
 
 def estrai_dati_da_pdf(percorso_pdf):
+    print("📣 Entrata in estrai_dati_da_pdf()")
     try:
         with fitz.open(percorso_pdf) as doc:
             testo = ""
             for pagina in doc:
-                testo += pagina.get_text("text")  # forzatura modalità text
+                testo += pagina.get_text("text")
 
         logging.info(f"📏 Lunghezza testo PDF: {len(testo)}")
         logging.info(f"📄 Testo PDF estratto (prime 800c):\n{text[:800]}")
