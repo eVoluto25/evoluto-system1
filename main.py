@@ -42,46 +42,46 @@ async def analizza_pdf(
                 relazione_finale = f.read()
         else:
             logging.info("🧠 Generazione relazione con Claude")
-            output_gpt = None  # 🔐 Inizializza la variabile
+            output_gpt = None  # 🔐 Inizializza variabile
 
-        if os.path.exists("output_gpt.txt"):
-           with open("output_gpt.txt", "r") as f:
-           output_gpt = f.read()
+            if os.path.exists("output_gpt.txt"):
+                with open("output_gpt.txt", "r") as f:
+                    output_gpt = f.read()
 
-        if not output_gpt:
-           logging.error("❌ GPT non generato o vuoto, interrotto flusso Claude.")
-           return JSONResponse(content={"esito": "errore", "dettaglio": "output_gpt non disponibile"}, status_code=500)
-           relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-           with open("relazione_finale.txt", "w") as f:
-                 f.write(relazione_finale)
+            if not output_gpt:
+                logging.error("❌ GPT non generato o vuoto, interrotto flusso Claude.")
+                return JSONResponse(
+                    content={"esito": "errore", "dettaglio": "output_gpt non disponibile"},
+                    status_code=500
+                )
+
+            relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+
+            with open("relazione_finale.txt", "w") as f:
+                f.write(relazione_finale)
+
             logging.info("✅ Relazione Claude completata e salvata")
 
         output_gpt = None
-        
+
         if os.path.exists("output_gpt.txt"):
             logging.info("📄 Analisi GPT già presente, lettura da file")
             with open("output_gpt.txt", "r") as f:
                 output_gpt = f.read()
         else:
             logging.info("🧠 Avvio analisi GPT")
-            output_gpt = analisi_completa_multipla(path)
+            output_gpt = esegui_analisi_completa(path)
 
-            if not output_gpt:
-                raise ValueError("Errore: output_gpt non generato correttamente")
-    
             with open("output_gpt.txt", "w") as f:
                 f.write(output_gpt)
+
             logging.info("✅ Analisi GPT completata e salvata")
 
-        # Avvio analisi finale
-        esegui_analisi_completa(
-            path,
-            {"nome": name, "email": email, "telefono": phone},
-            "dataset_bandi.csv"
-        )
-
-        logging.info("✅ Esecuzione completa terminata.")
-        return JSONResponse(content={"esito": "ok"})
+        return JSONResponse(content={
+            "esito": "ok",
+            "relazione": relazione_finale,
+            "gpt": output_gpt
+        })
 
     except Exception as e:
         logging.error(f"Errore durante l'elaborazione: {e}")
