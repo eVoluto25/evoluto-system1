@@ -1,16 +1,18 @@
-import os
-import logging
 from fastapi import FastAPI, Form, UploadFile
 from fastapi.responses import JSONResponse
+import logging
+import os
 from pathlib import Path
 from pipeline import esegui_analisi_completa
 
 app = FastAPI()
 
-@app.get("/", methods=["GET", "HEAD"])
-async def root():
+# ✅ Health check semplice
+@app.get("/")
+def root():
     return {"status": "ok"}
 
+# ✅ Endpoint principale di analisi
 @app.post("/analizza-pdf")
 async def analizza_pdf(
     name: str = Form(..., alias="name_2"),
@@ -19,37 +21,33 @@ async def analizza_pdf(
     upload: UploadFile = Form(..., alias="upload_1")
 ):
     try:
+        # Salvataggio file
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"{timestamp}_{upload.filename}"
         upload_folder = Path("uploads")
-        upload_folder.mkdir(exist_ok=True)
-        Path("uploads").mkdir(parents=True, exist_ok=True)
-        path = Path("uploads") / filename
+        upload_folder.mkdir(parents=True, exist_ok=True)
+        path = upload_folder / filename
 
         with open(path, "wb") as f:
             f.write(await upload.read())
 
         logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
 
-        try:
-            # 📄 Check se esiste già la relazione Claude salvata
-            if os.path.exists("relazione_finale.txt"):
-                logging.info("📄 Relazione Claude già presente, lettura da file")
-                with open("relazione_finale.txt", "r") as f:
-                    relazione_finale = f.read()
-            else:
-                logging.info("🧠 Generazione relazione con Claude")
-                relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-                with open("relazione_finale.txt", "w") as f:
-                    f.write(relazione_finale)
-                logging.info("✅ Relazione Claude completata e salvata")
-        except Exception as e:
-            logging.error(f"Errore durante la generazione della relazione Claude: {e}")
+        # Verifica se esiste già la relazione Claude
+        if os.path.exists("relazione_finale.txt"):
+            logging.info("📄 Relazione Claude già presente, lettura da file")
+            with open("relazione_finale.txt", "r") as f:
+                relazione_finale = f.read()
+        else:
+            logging.info("🧠 Generazione relazione con Claude")
+            relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+            with open("relazione_finale.txt", "w") as f:
+                f.write(relazione_finale)
+            logging.info("✅ Relazione Claude completata e salvata")
 
-        logging.info("🧠 Avvio esecuzione completa: GPT + Claude")
-        # 🗂️ Check se esiste già l'output GPT salvato
+        # Verifica se esiste già l'output GPT
         if os.path.exists("output_gpt.txt"):
-            logging.info("📂 Analisi GPT già presente, lettura da file")
+            logging.info("📄 Analisi GPT già presente, lettura da file")
             with open("output_gpt.txt", "r") as f:
                 output_gpt = f.read()
         else:
@@ -59,9 +57,14 @@ async def analizza_pdf(
                 f.write(output_gpt)
             logging.info("✅ Analisi GPT completata e salvata")
 
-        esegui_analisi_completa(path, {"nome": name, "email": email, "telefono": phone}, "dataset_bandi.csv")
-        logging.info("✅ Esecuzione completa terminata.")
+        # Avvio analisi finale
+        esegui_analisi_completa(
+            path,
+            {"nome": name, "email": email, "telefono": phone},
+            "dataset_bandi.csv"
+        )
 
+        logging.info("✅ Esecuzione completa terminata.")
         return JSONResponse(content={"esito": "ok"})
 
     except Exception as e:
