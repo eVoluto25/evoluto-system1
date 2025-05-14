@@ -63,6 +63,13 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
 
+        # 🔽 Tracciamento email inviata
+        log_email = f"Destinatario: info@capitaleaziendale.it\nOggetto: Nuova relazione strategica generata da Claude\n\n{relazione_finale}"
+        with open("log_email.txt", "w", encoding="utf-8") as f:
+        f.write(log_email.strip())
+
+        logging.info("📤 Log email salvato")
+
         # Invia la relazione via email al gestore
         invia_email(
             destinatario="info@capitaleaziendale.it",
