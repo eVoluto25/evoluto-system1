@@ -1,30 +1,47 @@
 import os
-import openai
 from dotenv import load_dotenv
-from prompt_loader import prompt_gpt
+import openai
 
-# Carica il file .env
+# Costante per limitare la dimensione del testo (in byte, circa 20.000 caratteri)
+MAX_GPT_OUTPUT_LENGTH = 20000
+
 load_dotenv()
-
-# Inizializza la chiave API
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def analisi_tecnica_gpt(bilancio, visura, bandi):
+def genera_analisi(bilancio, visura):
     try:
-        prompt = prompt_gpt(bilancio, visura, bandi)
+        prompt = f"""
+Sei un analista finanziario esperto. Analizza i seguenti dati aziendali (bilancio + visura camerale) per identificare punti di forza, criticità economiche, patrimoniali e gestionali.
+L'obiettivo è ottenere un quadro sintetico ma chiaro della situazione, utile per valutare la compatibilità con strumenti di finanza agevolata.
+
+⚠️ IMPORTANTE: la tua risposta verrà poi elaborata da un secondo sistema con forti limiti di spazio (max 9 MB).
+⛔ Non superare 20.000 caratteri.
+✅ Sii concreto, focalizzato e sintetico.
+
+--- DATI AZIENDALI ---
+BILANCIO:
+{bilancio}
+
+VISURA CAMERALE:
+{visura}
+
+"""
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Sei un CFO esperto in analisi aziendale, merito creditizio e strategia."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.5,
-            max_tokens=1500
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=3000,
+            temperature=0.4,
         )
 
-        return response.choices[0].message.content.strip()
+        risultato = response['choices'][0]['message']['content'].strip()
+
+        # Limitazione esplicita della lunghezza per compatibilità Claude
+        if len(risultato.encode("utf-8")) > MAX_GPT_OUTPUT_LENGTH:
+            risultato = risultato[:MAX_GPT_OUTPUT_LENGTH]
+
+        return risultato
 
     except Exception as e:
-        print("Errore durante l'elaborazione GPT:", e)
-        return "Errore durante l'elaborazione GPT"
+        print("Errore durante la generazione dell'analisi GPT:", e)
+        return "Errore durante l'elaborazione dell'analisi GPT."
