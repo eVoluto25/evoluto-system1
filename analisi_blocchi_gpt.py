@@ -1,12 +1,16 @@
-def analisi_completa_multipla(testo: str) -> str:
-    """
-    Analizza il testo suddividendolo in blocchi, evitando di superare i limiti dei token
-    e assicurando il salvataggio progressivo per poter riprendere in caso di interruzioni.
-    """
-    import os
-    from dividi_blocchi import dividi_blocchi  # Assicurati che esista questa funzione
-    from gpt_module import analisi_tecnica_gpt  # Funzione che chiama GPT
+import os
+from gpt_module import analisi_tecnica_gpt  # Funzione che chiama GPT
 
+# ✅ Funzione per dividere il testo in blocchi
+def dividi_blocchi(testo: str, max_caratteri: int = 10000) -> list:
+    """
+    Divide il testo in blocchi da massimo `max_caratteri` caratteri.
+    Utile per evitare problemi di lunghezza input nei modelli GPT.
+    """
+    return [testo[i:i + max_caratteri] for i in range(0, len(testo), max_caratteri)]
+
+# ✅ Funzione principale che esegue l’analisi su più blocchi
+def analisi_completa_multipla(testo):
     blocchi = dividi_blocchi(testo)
     risultati = []
 
@@ -23,8 +27,10 @@ def analisi_completa_multipla(testo: str) -> str:
         try:
             risposta = analisi_tecnica_gpt(blocco, "", "")  # visura e bandi possono essere vuoti
             risultati.append(risposta)
+
             with open(path_blocco, "w") as f:
                 f.write(risposta)
+
         except Exception as e:
             print(f"Errore nel blocco {i+1}:", e)
             break
