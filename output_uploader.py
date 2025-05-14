@@ -1,1 +1,1 @@
-def salva_output_html(titolo, contenuto)
+def salva_output_html(titolo, contenuto):
