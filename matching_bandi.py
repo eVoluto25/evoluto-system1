@@ -1,37 +1,31 @@
-import csv
+import json
 import logging
 
-def carica_bandi(csv_path):
+def confronta_con_bandi(caratteristiche_azienda):
     try:
-        with open(csv_path, newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            bandi = [row for row in reader if isinstance(row, dict)]
-            logging.info(f"✅ Caricati {len(bandi)} bandi dal file CSV")
-            return bandi
+        with open("bandi_bandi.json", "r", encoding="utf-8") as f:
+            bandi = json.load(f)
     except Exception as e:
-        logging.error(f"Errore nel caricamento bandi: {e}")
+        logging.error(f"Errore apertura bandi: {e}")
         return []
 
-def filtra_bandi_compatibili(bandi, caratteristiche_impresa):
+    forma = caratteristiche_azienda.get("forma_giuridica", "").lower()
+    ateco = caratteristiche_azienda.get("codice_ateco", "").split(".")[0]
+    attivita = caratteristiche_azienda.get("attivita_prevalente", "").lower()
+
     bandi_compatibili = []
 
     for bando in bandi:
-        if not isinstance(bando, dict):
-            logging.warning(f"⚠️ Riga non valida, ignorata: {bando}")
-            continue
+        beneficiari = bando.get("beneficiari", "").lower()
+        settori = bando.get("settori", "").lower()
+        ateco_bando = bando.get("ateco", "")
 
-        try:
-            forma = bando.get("forma_giuridica", "").lower()
-            ateco = bando.get("codice_ateco", "").lower()
-            attivita = bando.get("attivita_prevalente", "").lower()
+        if (
+            forma in beneficiari
+            or any(k in settori for k in [forma, attivita])
+            or (ateco and ateco in ateco_bando)
+        ):
+            bandi_compatibili.append(bando)
 
-            if (
-                caratteristiche_impresa.get("forma_giuridica", "").lower() in forma and
-                caratteristiche_impresa.get("codice_ateco", "").lower() in ateco and
-                caratteristiche_impresa.get("attivita_prevalente", "").lower() in attivita
-            ):
-                bandi_compatibili.append(bando)
-        except Exception as e:
-            logging.error(f"Errore nel filtraggio: {e}")
-
+    logging.info(f"Bandi compatibili trovati: {len(bandi_compatibili)}")
     return bandi_compatibili
