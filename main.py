@@ -32,6 +32,17 @@ async def analizza_pdf(
             f.write(await upload.read())
         logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
         logging.info("🧠 Avvio esecuzione completa: GPT + Claude")
+        # 📁 Check se esiste già l'output GPT salvato
+if os.path.exists("output_gpt.txt"):
+    logging.info("📁 Analisi GPT già presente, lettura da file")
+    with open("output_gpt.txt", "r") as f:
+        output_gpt = f.read()
+else:
+    logging.info("🧠 Avvio analisi GPT")
+    output_gpt = analisi_completa_multipla(path)  # path al PDF o testo
+    with open("output_gpt.txt", "w") as f:
+        f.write(output_gpt)
+    logging.info("✅ Analisi GPT completata e salvata")
         esegui_analisi_completa(path, {"nome": name, "email": email, "telefono": phone}, "dataset_bandi.csv")
         logging.info("✅ Esecuzione completa terminata.")
         return JSONResponse(content={"esito": "ok"})
