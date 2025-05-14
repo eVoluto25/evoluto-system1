@@ -16,6 +16,7 @@ def analisi_completa_multipla(testo):
 
     for i, blocco in enumerate(blocchi):
         path_blocco = f"blocco_{i+1}.txt"
+        logging.info(f"🧠 GPT – Invio blocco {i+1} di {len(blocchi)}")
 
         # Salta i blocchi già analizzati
         if os.path.exists(path_blocco):
