@@ -1,9 +1,10 @@
 import os
 from uuid import uuid4
+from env_loader import carica_variabili_ambiente
 
+config = carica_variabili_ambiente()
+BASE_URL = config.get("BASE_URL_OUTPUT", "https://tuoprogetto.onrender.com/output/")
 OUTPUT_DIR = "output"
-BASE_URL = "https://evoluto-system1.onrender.com"
-
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def salva_output_html(titolo, contenuto):
