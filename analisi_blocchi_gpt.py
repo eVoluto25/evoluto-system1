@@ -10,6 +10,9 @@ def dividi_blocchi(testo: str, max_caratteri: int = 10000) -> list:
 
 # ✅ Funzione principale
 def analisi_completa_multipla(testo):
+    # 🧼 Pulizia del testo da caratteri non compatibili con UTF-8
+    testo = testo.encode("utf-8", "ignore").decode("utf-8")
+    
     blocchi = dividi_blocchi(testo)
     risultati = []
 
