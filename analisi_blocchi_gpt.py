@@ -33,6 +33,19 @@ def analisi_completa_multipla(testo):
 
         except Exception as e:
             print(f"Errore nel blocco {i+1}:", e)
-            break
+
+            # 🔁 Genera l'analisi parziale
+            parziale = "\n\n".join(risultati)
+            corpo_email = f"""⚠️ GPT si è interrotto al blocco {i+1}.\n
+    Ecco l'analisi parziale prodotta finora:\n\n{parziale}
+    """
+
+            # 📬 Invia comunque quanto raccolto
+            invia_email(
+                destinatario="info@capitaleaziendale.it",
+                oggetto=f"⚠️ Analisi GPT parziale interrotta al blocco {i+1}",
+                corpo=corpo_email
+            )
+            break # Termina il ciclo
 
     return "\n\n".join(risultati)
