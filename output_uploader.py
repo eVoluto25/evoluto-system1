@@ -1,2 +1,1 @@
-# salva_output_html()
-# (contenuto del file come da risposta precedente)
+def salva_output_html(titolo, contenuto)
