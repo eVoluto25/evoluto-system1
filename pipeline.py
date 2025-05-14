@@ -59,6 +59,37 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     try:
         logging.info("🧾 Generazione relazione con Claude")
         relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+
+        # Salva relazione finale
+        with open("relazione_finale.txt", "w") as f:
+            f.write(relazione_finale)
+
+        logging.info("✅ Relazione finale salvata")
+
+        # ✅ Costruisci testo email limitato e con link GPT
+        corpo_email = f"""{relazione_finale[:10000]}
+
+📎 Analisi tecnica completa GPT disponibile qui:
+https://TUA-APP-RENDER.onrender.com/uploads/output_gpt.txt"""
+
+        # ✅ Log email
+        with open("log_email.txt", "w", encoding="utf-8") as f:
+            f.write(f"Destinatario: info@capitaleaziendale.it\nOggetto: Relazione Claude\n\n{corpo_email.strip()}")
+
+        logging.info("📤 Log email salvato")
+
+        # ✅ Invio tramite Make
+        import requests
+        requests.post(
+            "https://hook.eu2.make.com/WEBHOOK_CLAUDE",  # sostituisci con il tuo webhook attivo
+            json={
+                "subject": "📈 Relazione strategica conclusa",
+                "body": corpo_email
+            }
+        )
+
+        logging.info("📩 Email inviata via Make")
+        relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
         with open("relazione_finale.txt", "w") as f:
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
@@ -81,3 +112,4 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     except Exception as e:
         logging.error(f"Errore durante la generazione o invio della relazione finale: {e}")
         return
+
