@@ -1,7 +1,7 @@
 import os
 import logging
 import requests
-from gpt_module import analisi_tecnica_gpt  # Funzione che chiama GPT
+from gpt_module import analisi_completa_multipla
 from email_handler import invia_email
 
 # ✅ Funzione per dividere il testo in blocchi
