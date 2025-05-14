@@ -5,8 +5,9 @@ from matching_bandi import confronta_con_bandi
 from claude_module import analizza_con_claude
 from output_uploader import salva_output_html
 from email_handler import invia_email
-from scarica_bandi import aggiorna_bandi
+from bandi_updater import aggiorna_bandi
 from env_loader import carica_variabili_ambiente
+from monitor import registra_log
 
 def esegui_pipeline(percorso_pdf, email_destinatario):
     logging.info("🚀 Inizio pipeline completa")
@@ -70,3 +71,14 @@ Il team
         logging.info("📤 Email inviata con successo")
     except Exception as e:
         logging.error(f"❌ Invio email fallito: {e}")
+
+    try:
+        registra_log({
+            "email": email_destinatario,
+            "gpt": url_html_gpt,
+            "claude": url_html_claude,
+            "status": "ok"
+        })
+        logging.info("🗂️ Log sessione salvato")
+    except Exception as e:
+        logging.error(f"❌ Log fallito: {e}")
