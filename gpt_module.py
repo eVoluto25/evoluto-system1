@@ -45,10 +45,6 @@ def analizza_con_gpt(dati):
 def crea_prompt_gpt(dati):
     return f"""Analizza i seguenti dati di bilancio (ultimi disponibili):
 
-Forma giuridica: {dati.get('forma_giuridica')}
-Attività prevalente: {dati.get('attivita_prevalente')}
-Codice ATECO: {dati.get('codice_ateco')}
-
 Dati economici:
 - Ricavi: {dati.get('ricavi')}
 - Utile netto: {dati.get('utile_netto')}
@@ -76,4 +72,4 @@ Calcola e commenta:
 - Incidenza rimanenze
 - Copertura debiti fornitori
 
-Fornisci una relazione chiara, utile all’imprenditore per capire la salute finanziaria aziendale."
+Fornisci una relazione chiara, utile all’imprenditore per capire la salute finanziaria aziendale."""
