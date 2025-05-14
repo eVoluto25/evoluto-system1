@@ -70,7 +70,7 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         corpo_email = f"""{relazione_finale[:10000]}
 
 📎 Analisi tecnica completa GPT disponibile qui:
-https://TUA-APP-RENDER.onrender.com/uploads/output_gpt.txt"""
+https://evoluto-system1.onrender.com/uploads/output_gpt.txt"""
 
         # ✅ Log email
         with open("log_email.txt", "w", encoding="utf-8") as f:
