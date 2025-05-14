@@ -4,7 +4,7 @@ from openai import openai
 from dotenv import load_dotenv
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai(api_key=os.getenv("OPENAI_API_KEY"))
 
 def analisi_completa_multipla(testo):
     blocchi = dividi_blocchi(testo)
