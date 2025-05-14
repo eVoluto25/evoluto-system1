@@ -31,6 +31,19 @@ async def analizza_pdf(
         with open(path, "wb") as f:
             f.write(await upload.read())
         logging.info(f"🟢 RICEVUTA: {name}, {phone}, {email}, file={upload.filename}")
+
+# 🧾 Check se esiste già la relazione Claude salvata
+if os.path.exists("relazione_finale.txt"):
+    logging.info("📄 Relazione Claude già presente, lettura da file")
+    with open("relazione_finale.txt", "r") as f:
+        relazione_finale = f.read()
+else:
+    logging.info("🧠 Generazione relazione con Claude")
+    relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+    with open("relazione_finale.txt", "w") as f:
+        f.write(relazione_finale)
+    logging.info("✅ Relazione Claude completata e salvata")
+        
         logging.info("🧠 Avvio esecuzione completa: GPT + Claude")
         # 📁 Check se esiste già l'output GPT salvato
 if os.path.exists("output_gpt.txt"):
