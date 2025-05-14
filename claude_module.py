@@ -11,18 +11,15 @@ load_dotenv()
 # Inizializza client Claude
 client = anthropic.Anthropic(api_key=os.getenv("CLAUDE_API_KEY"))
 
-def genera_relazione_con_claude(bilancio, visura, bandi):
+def genera_relazione_con_claude(output_gpt, bandi_compatibili):
     try:
         # Costruzione prompt direttamente qui, senza dipendere da altri file
         prompt = f"""
 🧠 ANALISI GPT:
-{bilancio}
-
-📄 VISURA:
-{visura}
+{output_gpt}
 
 📌 BANDI COMPATIBILI:
-{bandi}
+{bandi_compatibili}
 """
 
         logging.info("📰 Prompt Claude:\n" + prompt)
