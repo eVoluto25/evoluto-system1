@@ -47,7 +47,8 @@ async def analizza_pdf(
                 f.write(relazione_finale)
             logging.info("✅ Relazione Claude completata e salvata")
 
-        # Verifica se esiste già l'output GPT
+        output_gpt = None
+        
         if os.path.exists("output_gpt.txt"):
             logging.info("📄 Analisi GPT già presente, lettura da file")
             with open("output_gpt.txt", "r") as f:
