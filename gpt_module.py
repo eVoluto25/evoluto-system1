@@ -1,48 +1,37 @@
+
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
-import openai
-import logging
 
 load_dotenv()
-
-# Imposta la chiave API
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Costanti di controllo dimensione massima
-MAX_CARATTERI_GPT = 12000  # Limite prudenziale
-
-# Funzione per analisi GPT su un blocco
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def analisi_completa_multipla(testo):
-    blocchi = []
-    testo_corrente = ""
-
-    for paragrafo in testo.split("\n"):
-        if len(testo_corrente) + len(paragrafo) < MAX_CARATTERI_GPT:
-            testo_corrente += paragrafo + "\n"
-        else:
-            blocchi.append(testo_corrente)
-            testo_corrente = paragrafo + "\n"
-
-    if testo_corrente:
-        blocchi.append(testo_corrente)
-
+    blocchi = dividi_blocchi(testo)
     risultati = []
 
     for i, blocco in enumerate(blocchi):
+        path_blocco = f"blocco_{i+1}.txt"
+
+        if os.path.exists(path_blocco):
+            with open(path_blocco, "r") as f:
+                risultati.append(f.read())
+            continue
+
         try:
-            logging.info(f"🧠 GPT - Invio blocco {i+1} di {len(blocchi)}")
-            risposta = openai.ChatCompletion.create(
+            risposta = client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "Sei un esperto di analisi economico-finanziaria. Analizza il seguente testo estratto da una visura e un bilancio."},
-                    {"role": "user", "content": blocco}
-                ]
+                messages=[{"role": "user", "content": blocco}],
+                temperature=0.6
             )
-            risultato = risposta.choices[0].message.content.strip()
-            risultati.append(risultato)
+            risultati.append(risposta.choices[0].message.content)
+            with open(path_blocco, "w") as f:
+                f.write(risposta.choices[0].message.content)
         except Exception as e:
-            logging.error(f"Errore nel blocco {i+1}: {e}")
+            print(f"Errore nel blocco {i+1}:", e)
             break
 
     return "\n\n".join(risultati)
+
+# Alias per retrocompatibilità
+analisi_tecnica_gpt = analisi_completa_multipla
