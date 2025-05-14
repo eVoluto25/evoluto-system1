@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import anthropic
+import logging
 
 # Costanti
 MAX_CARATTERI = 9000
