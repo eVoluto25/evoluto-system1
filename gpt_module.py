@@ -1,38 +1,48 @@
+import os
+from dotenv import load_dotenv
 import openai
 import logging
 
-MAX_CARATTERI_GPT = 8000  # Limite per ciascun blocco, compatibile anche con Claude
+load_dotenv()
+
+# Imposta la chiave API
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Costanti di controllo dimensione massima
+MAX_CARATTERI_GPT = 12000  # Limite prudenziale
+
+# Funzione per analisi GPT su un blocco
 
 def analisi_completa_multipla(testo):
-    logging.info("🧠 Avvio analisi GPT multipla...")
-
     blocchi = []
-    while len(testo) > MAX_CARATTERI_GPT:
-        blocchi.append(testo[:MAX_CARATTERI_GPT])
-        testo = testo[MAX_CARATTERI_GPT:]
-    if testo:
-        blocchi.append(testo)
+    testo_corrente = ""
+
+    for paragrafo in testo.split("\n"):
+        if len(testo_corrente) + len(paragrafo) < MAX_CARATTERI_GPT:
+            testo_corrente += paragrafo + "\n"
+        else:
+            blocchi.append(testo_corrente)
+            testo_corrente = paragrafo + "\n"
+
+    if testo_corrente:
+        blocchi.append(testo_corrente)
 
     risultati = []
-    totale = len(blocchi)
 
     for i, blocco in enumerate(blocchi):
-        logging.info(f"🧠 GPT - Invio blocco {i+1} di {totale}")
         try:
-            response = openai.ChatCompletion.create(
+            logging.info(f"🧠 GPT - Invio blocco {i+1} di {len(blocchi)}")
+            risposta = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "Sei un esperto analista finanziario."},
+                    {"role": "system", "content": "Sei un esperto di analisi economico-finanziaria. Analizza il seguente testo estratto da una visura e un bilancio."},
                     {"role": "user", "content": blocco}
-                ],
-                temperature=0.3,
-                max_tokens=2000
+                ]
             )
-            risultato = response['choices'][0]['message']['content']
+            risultato = risposta.choices[0].message.content.strip()
             risultati.append(risultato)
         except Exception as e:
-            logging.error(f"Errore GPT nel blocco {i+1}: {e}")
+            logging.error(f"Errore nel blocco {i+1}: {e}")
             break
 
-    logging.info("✅ Analisi GPT completata")
     return "\n\n".join(risultati)
