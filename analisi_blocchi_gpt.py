@@ -23,7 +23,7 @@ def analisi_completa_multipla(testo):
             continue
 
         try:
-            risposta = analisi_tecnica_gpt(blocco, "", "")
+            risposta = analisi_completa_multipla(blocco, "", "")
             risultati.append(risposta)
 
             with open(path_blocco, "w") as f:
