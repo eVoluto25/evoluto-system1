@@ -24,7 +24,13 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
     if os.path.exists("output_gpt.txt"):
         logging.info("📄 Analisi GPT già esistente, caricamento da file")
         try:
-            with open("output_gpt.txt", "r") as f:
+            from output_uploader import salva_output_html
+
+    # Salvataggio HTML GPT
+    url_html_gpt = salva_output_html("Analisi finanziaria GPT", output_gpt)
+
+    # Claude HTML
+    
                 output_gpt = f.read()
         except Exception as e:
             logging.error(f"Errore durante la lettura di output_gpt.txt: {e}")
@@ -61,16 +67,19 @@ def esegui_analisi_completa(file_path, caratteristiche_impresa, csv_bandi_path):
         relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
 
         # Salva relazione finale
-        with open("relazione_finale.txt", "w") as f:
+        url_html_claude = salva_output_html("Matching bandi Claude", relazione_finale)
             f.write(relazione_finale)
 
         logging.info("✅ Relazione finale salvata")
 
         # ✅ Costruisci testo email limitato e con link GPT
-        corpo_email = f"""{relazione_finale[:10000]}
+        corpo_email = f"""Gentile cliente,
 
-📎 Analisi tecnica completa GPT disponibile qui:
-https://evoluto-system1.onrender.com/uploads/output_gpt.txt"""
+📊 Analisi finanziaria GPT:
+{url_html_gpt}
+
+🎯 Opportunità e bandi compatibili (Claude):
+{url_html_claude}"""
 
         # ✅ Log email
         with open("log_email.txt", "w", encoding="utf-8") as f:
@@ -90,7 +99,7 @@ https://evoluto-system1.onrender.com/uploads/output_gpt.txt"""
 
         logging.info("📩 Email inviata via Make")
         relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-        with open("relazione_finale.txt", "w") as f:
+        url_html_claude = salva_output_html("Matching bandi Claude", relazione_finale)
             f.write(relazione_finale)
         logging.info("✅ Relazione finale salvata")
 
@@ -112,4 +121,3 @@ https://evoluto-system1.onrender.com/uploads/output_gpt.txt"""
     except Exception as e:
         logging.error(f"Errore durante la generazione o invio della relazione finale: {e}")
         return
-
