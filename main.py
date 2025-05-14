@@ -1,4 +1,3 @@
-
 import logging
 import sys
 from fastapi import FastAPI, UploadFile, Form, File
@@ -10,8 +9,9 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
 @app.post("/analizza-pdf")
-async def analizza_pdf(upload_1: UploadFile = File(...), email: str = Form(...)):
-    file = upload_1  # rinomina per compatibilità interna
+async def analizza_pdf(upload_1: UploadFile = File(...), email_1: str = Form(...)):
+    file = upload_1
+    email = email_1  # riassegno per compatibilità
     try:
         nome_file = f"temp_{file.filename}"
         with open(nome_file, "wb") as f:
@@ -23,6 +23,5 @@ async def analizza_pdf(upload_1: UploadFile = File(...), email: str = Form(...))
         logging.error(f"❌ Errore endpoint /analizza-pdf: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
-# Avvio come app FastAPI
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=10000)
