@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from pipeline import esegui_pipeline
-from claude_module import genera_relazione_con_claude
+from claude_module import analizza_con_claude
 
 app = FastAPI()
 
