@@ -15,6 +15,7 @@ def esegui_pipeline(percorso_pdf, email_destinatario):
     try:
         logging.info("📥 Estrazione dati da visura PDF")
         caratteristiche_azienda, bilancio = estrai_dati_da_pdf(percorso_pdf)
+        logging.info(f"🧾 Bilancio estratto: {bilancio}")
     except Exception as e:
         logging.error(f"❌ Errore durante l'estrazione dati: {e}")
         return
@@ -26,10 +27,13 @@ def esegui_pipeline(percorso_pdf, email_destinatario):
         logging.warning(f"⚠️ Impossibile aggiornare bandi: {e}")
 
     try:
-        logging.info("🧠 Analisi GPT in corso...")
+        logging.info("🎯 Chiamata a GPT in corso...")
         analisi_finanziaria = analizza_con_gpt(bilancio)
+        if not analisi_finanziaria or analisi_finanziaria.strip() == "":
+            logging.error("❌ GPT ha restituito una risposta vuota o nulla.")
+            return
     except Exception as e:
-        logging.error(f"❌ Errore GPT: {e}")
+        logging.error(f"❌ Errore esecuzione GPT: {e}")
         return
 
     try:
@@ -64,7 +68,7 @@ def esegui_pipeline(percorso_pdf, email_destinatario):
 
 Cordiali saluti,
 Il team
-"""  # chiusura corretta
+"""  # chiusura f-string
 
     try:
         invia_email(email_destinatario, "Risultati Analisi Aziendale", corpo_email)
