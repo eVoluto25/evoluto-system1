@@ -42,9 +42,18 @@ async def analizza_pdf(
                 relazione_finale = f.read()
         else:
             logging.info("🧠 Generazione relazione con Claude")
-            relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
-            with open("relazione_finale.txt", "w") as f:
-                f.write(relazione_finale)
+            output_gpt = None  # 🔐 Inizializza la variabile
+
+        if os.path.exists("output_gpt.txt"):
+           with open("output_gpt.txt", "r") as f:
+           output_gpt = f.read()
+
+        if not output_gpt:
+           logging.error("❌ GPT non generato o vuoto, interrotto flusso Claude.")
+           return JSONResponse(content={"esito": "errore", "dettaglio": "output_gpt non disponibile"}, status_code=500)
+           relazione_finale = genera_relazione_con_claude(output_gpt, bandi_compatibili)
+           with open("relazione_finale.txt", "w") as f:
+                 f.write(relazione_finale)
             logging.info("✅ Relazione Claude completata e salvata")
 
         output_gpt = None
