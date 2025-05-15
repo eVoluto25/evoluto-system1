@@ -22,7 +22,7 @@ async def analizza_pdf(
     # Salvataggio file temporaneo
     temp_file_path = "temp_file.pdf"
     with open(temp_file_path, "wb") as f:
-        f.write(await file.read())
+        f.write(await upload_1.read())
 
     try:
         logging.info("🚀 Inizio pipeline completa")
