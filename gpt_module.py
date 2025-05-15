@@ -1,6 +1,7 @@
 import logging
 import openai
 from indici_analisi import INDICI_REDDITIVITÀ, INDICI_SOLIDITÀ, INDICI_LIQUIDITÀ
+from supabase_uploader import upload_html_to_supabase
 
 import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
