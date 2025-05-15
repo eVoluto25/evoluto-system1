@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from extractor import estrai_dati_da_pdf
 from gpt_module import analizza_completo_con_gpt
 from claude_module import genera_relazione_con_claude
-from pipeline import aggiorna_bandi, esegui_match_con_bandi
+from pipeline import aggiorna_bandi, esegui_analisi_completa
 
 app = FastAPI()
 
@@ -47,7 +47,7 @@ async def analizza_pdf(file: UploadFile, email: str = Form(...)):
 
         # Matching con bandi disponibili
         logging.info("📊 Avvio matching con i bandi disponibili")
-        bandi_compatibili = esegui_match_con_bandi(caratteristiche_azienda, bilancio)
+        bandi_compatibili = esegui_analisi_completa(caratteristiche_azienda, bilancio)
 
         # Analisi Claude (relazione)
         logging.info("📎 Generazione relazione finale tramite Claude")
