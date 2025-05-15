@@ -13,9 +13,12 @@ def root_head():
     return {"status": "✅ eVoluto backend attivo", "version": "1.0"}
 
 @app.post("/analizza-pdf")
-async def analizza_pdf(file: UploadFile, email: str = Form(...)):
-    logging.info("📥 File ricevuto via API: %s, email: %s", file.filename, email)
-
+async def analizza_pdf(
+    upload_1: UploadFile = Form(...),   # questo riceve il PDF
+    email_1: str = Form(...)            # questo riceve l'email
+):
+    logging.info("✅ Ricevuto upload_1: %s, email_1: %s", upload_1.filename, email_1)
+    
     # Salvataggio file temporaneo
     temp_file_path = "temp_file.pdf"
     with open(temp_file_path, "wb") as f:
