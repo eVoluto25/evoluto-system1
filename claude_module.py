@@ -20,6 +20,7 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
             f"2. Perché sono rilevanti\n"
             f"3. Quali benefici potrebbe ottenere\n"
             f"Usa uno stile chiaro, professionale e numerato."
+            f"Restituisci tutto in formato HTML ordinato, usando <h2> per i titoli di sezione e <p> per i paragrafi."
         )
 
         openai.api_key = os.getenv("OPENAI_API_KEY")
