@@ -8,7 +8,7 @@ from claude_module import genera_relazione_con_claude
 from pipeline import aggiorna_bandi, esegui_analisi_completa
 
 app = FastAPI()
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root_head():
     return {"status": "✅ eVoluto backend attivo", "version": "1.0"}
 
