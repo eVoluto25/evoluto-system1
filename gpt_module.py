@@ -63,8 +63,8 @@ Analizza il testo seguente ed elabora un report ordinato e comprensibile. Conclu
     return blocchi
     
     def analizza_blocchi_gpt(testo_bilancio):
-    blocchi = suddividi_testo_in_blocchi(testo_bilancio)
-    risultati = []
+        blocchi = suddividi_testo_in_blocchi(testo_bilancio)
+        risultati = []
 
     for i, blocco in enumerate(blocchi):
         logging.info(f"🔄 GPT – Elaborazione blocco {i+1}/{len(blocchi)}")
