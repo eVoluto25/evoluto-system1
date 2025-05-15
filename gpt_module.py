@@ -75,7 +75,32 @@ ___
 {testo_bilancio}
 ___
 """
-   
+
+        # Salva il testo in HTML temporaneo
+    nome_file = f"gpt_report_{uuid.uuid4().hex}.html"
+    contenuto_html = f"<html><body>{testo_output}</body></html>"
+    
+    with open(nome_file, "w", encoding="utf-8") as f:
+        f.write(contenuto_html)
+
+    # Caricamento su Supabase
+    from supabase import create_client
+    import os
+
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_KEY")
+    supabase = create_client(supabase_url, supabase_key)
+
+    bucket = "report-html"
+    path_remoto = f"gpt/{nome_file}"
+
+    with open(nome_file, "rb") as f:
+        supabase.storage.from_(bucket).upload(path_remoto, f, {"content-type": "text/html"})
+
+    url_pubblico = f"{supabase_url}/storage/v1/object/public/{bucket}/{path_remoto}"
+
+    return url_pubblico
+    
     if risultati:
         return "\n\n".join(risultati)
     else:
