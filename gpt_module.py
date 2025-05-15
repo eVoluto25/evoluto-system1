@@ -8,7 +8,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 def suddividi_testo_in_blocchi(testo, max_token=3000):
     parole = testo.split()
     blocchi = []
-    blocco_corrente = ""
+    blocco_corrente = []
 
     for parola in parole:
         blocco_corrente.append(parola)
