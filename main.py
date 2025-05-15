@@ -8,6 +8,9 @@ from claude_module import genera_relazione_con_claude
 from pipeline import aggiorna_bandi, esegui_analisi_completa
 
 app = FastAPI()
+@app.get("/")
+def root():
+    return {"status": "✅ eVoluto backend attivo", "version": "1.0"}
 
 @app.post("/analizza-pdf")
 async def analizza_pdf(file: UploadFile, email: str = Form(...)):
