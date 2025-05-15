@@ -6,6 +6,7 @@ from extractor import estrai_dati_da_pdf
 from gpt_module import analizza_completo_con_gpt
 from claude_module import genera_relazione_con_claude
 from pipeline import aggiorna_bandi, esegui_analisi_completa
+from moduli.make_webhook import invia_a_make
 
 app = FastAPI()
 @app.api_route("/", methods=["GET", "HEAD"])
@@ -61,6 +62,27 @@ async def analizza_pdf(
 
         # Pulizia file temporaneo
         os.remove(temp_file_path)
+
+        # Pulizia file temporaneo
+os.remove(temp_file_path)
+
+# Costruzione payload da inviare a Make
+payload = {
+    "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+    "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+    "outputGpt": link_gpt,
+    "outputClaude": link_claude
+}
+
+# Invio al webhook Make
+try:
+    response = requests.post("https://hook.eu2.make.com/tuo_webhook", json=payload)
+    response.raise_for_status()
+    print("✅ Dati inviati correttamente a Make.")
+except requests.exceptions.RequestException as e:
+    print(f"❌ Errore invio Make: {e}")
+
+# Restituzione risposta finale
 
         return {
             "analisi": analisi_finanziaria,
