@@ -5,7 +5,7 @@ from indici_analisi import INDICI_REDDITIVITÀ, INDICI_SOLIDITÀ, INDICI_LIQUIDI
 import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
- def suddividi_testo_in_blocchi(testo, max_token=1500):
+def suddividi_testo_in_blocchi(testo, max_token=1500):
      parole = testo.split()
      blocchi = []
      blocco_corrente = []
