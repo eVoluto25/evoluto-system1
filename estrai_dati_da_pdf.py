@@ -1,29 +1,21 @@
 import logging
 from estrazione_pdf import estrai_testo_da_pdf
 
-def estrai_dati_da_pdf(percorso_pdf):
+def estrai_dati_da_pdf(file_path):
     try:
-        logging.info("📩 Entrata in estrai_dati_da_pdf()")
-        text = estrai_testo_da_pdf(percorso_pdf)
+        logging.info("📣 Entrata in estrai_dati_da_pdf()")
+        text = estrai_testo_da_pdf(file_path)  # ✅ Assegno il testo estratto
         logging.info(f"📏 Lunghezza testo PDF: {len(text)}")
 
-        caratteristiche = {}
-        bilancio = {}
-
-        # Esempio semplice: verifica presenza di parole chiave nel testo PDF
+        # (Esempio di logica su contenuto)
         if "Codice Fiscale" in text:
-            caratteristiche["codice_fiscale"] = "Rilevato"
+            logging.info("🔍 Codice Fiscale rilevato nel testo")
         else:
-            caratteristiche["codice_fiscale"] = "Non presente"
+            logging.info("🚫 Codice Fiscale non presente")
 
-        if "Capitale Sociale" in text:
-            bilancio["capitale_sociale"] = "Presente"
-        else:
-            bilancio["capitale_sociale"] = "Non presente"
-
-        return caratteristiche, bilancio
+        return text
 
     except Exception as e:
         logging.error(f"❌ Errore apertura PDF: {e}")
         logging.error(f"❌ Errore durante l'estrazione dati: {e}")
-        return {}, {}
+        return ""
