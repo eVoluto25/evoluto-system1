@@ -9,12 +9,14 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
 
         prompt = (
-            f"Hai ricevuto un'analisi finanziaria dell'azienda basata sul suo bilancio:\n\n"
-            f"📊 Analisi GPT:\n{analisi_gpt}\n\n"
             f"L'azienda ha queste caratteristiche:\n"
+            f"- Denominazione: {caratteristiche.get('denominazione', 'N/D')}\n"
+            f"- Amministratore: {caratteristiche.get('amministratore', 'N/D')}\n"
             f"- Forma giuridica: {caratteristiche.get('forma_giuridica')}\n"
             f"- Codice ATECO: {caratteristiche.get('codice_ateco')}\n"
             f"- Attività prevalente: {caratteristiche.get('attivita_prevalente')}\n\n"
+            f"Hai ricevuto un'analisi finanziaria dell'azienda basata sul suo bilancio:\n\n"
+            f"📊 Analisi GPT:\n{analisi_gpt}\n\n"
             f"I bandi compatibili trovati sono:\n"
             f"{formatta_bandi(bandi)}\n\n"
             f"🎯 Elabora una relazione sintetica che identifichi:\n"
