@@ -35,6 +35,10 @@ def suddividi_testo_in_blocchi(testo, max_token=1500):
                 logging.warning(f"⚠️ Blocco {i+1} – Nessuna risposta")
         except Exception as e:
             logging.error(f"❌ Errore durante l'elaborazione del blocco {i+1}: {e}")
+    if risultati:
+        return "\n\n".join(risultati)
+    else:
+        return None
 
 def analizza_completo_con_gpt(testo_bilancio):
     logging.info("\U0001f916 Avvio analisi GPT completa con struttura indici...")
