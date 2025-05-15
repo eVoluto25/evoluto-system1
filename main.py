@@ -88,9 +88,18 @@ except requests.exceptions.RequestException as e:
             "analisi": analisi_finanziaria,
             "bandi": bandi_compatibili,
             "relazione": relazione_finale
-        }
+        try:
+            # Pulizia file temporaneo
+            os.remove(temp_file_path)
 
-    except Exception as e:
-        logging.error("🔥 Errore generico durante l'elaborazione: %s", str(e))
-        os.remove(temp_file_path)
-        return JSONResponse(status_code=500, content={"errore": str(e)})
+            # Restituzione risposta finale
+            return {
+                "analisi": analisi_finanziaria,
+                "bandi": bandi_compatibili,
+                "relazione": relazione_finale
+            }
+
+        except Exception as e:
+            logging.error("🔥 Errore generico durante l'elaborazione: %s", str(e))
+            os.remove(temp_file_path)
+            return JSONResponse(status_code=500, content={"errore": str(e)})
