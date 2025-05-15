@@ -1,75 +1,68 @@
 import logging
+import os
+from fastapi import FastAPI, UploadFile, Form
+from fastapi.responses import JSONResponse
 from extractor import estrai_dati_da_pdf
-from gpt_module import analizza_completo_con_gpt
+from gpt_module import analizza_con_gpt
 from claude_module import genera_relazione_con_claude
-from bandi_matcher import trova_bandi_compatibili
-from email_handler import recupera_email_con_allegati
+from pipeline import aggiorna_bandi, esegui_match_con_bandi
 
+app = FastAPI()
 
-def esegui_analisi_completa(percorso_pdf, email_destinatario):
-    logging.info("📥 File ricevuto via API: %s, email: %s", percorso_pdf, email_destinatario)
+@app.post("/analizza-pdf")
+async def analizza_pdf(file: UploadFile, email: str = Form(...)):
+    logging.info("📥 File ricevuto via API: %s, email: %s", file.filename, email)
+
+    # Salvataggio file temporaneo
+    temp_file_path = "temp_file.pdf"
+    with open(temp_file_path, "wb") as f:
+        f.write(await file.read())
 
     try:
         logging.info("🚀 Inizio pipeline completa")
 
-        logging.info("📄 Estrazione dati da visura PDF")
-        caratteristiche_azienda, bilancio = estrai_dati_da_pdf(percorso_pdf)
-        logging.info(f"📎 Lunghezza testo PDF: {len(bilancio)}")
+        # Estrazione dati da visura PDF
+        caratteristiche_azienda, bilancio = estrai_dati_da_pdf(temp_file_path)
+        logging.info("📄 Estrazione dati completata")
 
-    except Exception as e:
-        logging.error(f"❌ Errore apertura PDF: {e}")
-        logging.error(f"❌ Errore durante l'estrazione dati: {e}")
-        return
+        # Validazione base
+        if not caratteristiche_azienda or not bilancio:
+            logging.error("❌ Dati aziendali o bilancio mancanti o vuoti")
+            return JSONResponse(status_code=422, content={"errore": "Dati insufficienti"})
 
-    try:
-        logging.info("🌐 Aggiornamento bandi pubblici")
-        from aggiorna_bandi import aggiorna_bandi
-        aggiorna_bandi()
-    except Exception as e:
-        logging.warning(f"⚠️ Impossibile aggiornare bandi: {e}")
+        # Analisi GPT
+        logging.info("🤖 Chiamata a GPT in corso...")
+        analisi_finanziaria = analizza_con_gpt(bilancio)
 
-    try:
-        logging.info("🎯 Chiamata a GPT in corso...")
-        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
         if not analisi_finanziaria or analisi_finanziaria.strip() == "":
             logging.error("❌ GPT ha restituito una risposta vuota o nulla.")
-            return
+            return JSONResponse(status_code=422, content={"errore": "Analisi GPT non riuscita"})
+
+        # Aggiornamento bandi pubblici
+        try:
+            logging.info("🛰 Aggiornamento bandi pubblici in corso")
+            aggiorna_bandi()
+        except Exception as e:
+            logging.warning(f"⚠ Impossibile aggiornare bandi: {e}")
+
+        # Matching con bandi disponibili
+        logging.info("📊 Avvio matching con i bandi disponibili")
+        bandi_compatibili = esegui_match_con_bandi(caratteristiche_azienda, bilancio)
+
+        # Analisi Claude (relazione)
+        logging.info("📎 Generazione relazione finale tramite Claude")
+        relazione_finale = genera_relazione_con_claude(analisi_finanziaria, bandi_compatibili)
+
+        # Pulizia file temporaneo
+        os.remove(temp_file_path)
+
+        return {
+            "analisi": analisi_finanziaria,
+            "bandi": bandi_compatibili,
+            "relazione": relazione_finale
+        }
+
     except Exception as e:
-        logging.error(f"❌ Errore durante analisi GPT: {e}")
-        return
-
-    try:
-        logging.info("🤖 Matching bandi compatibili")
-        bandi_trovati = trova_bandi_compatibili(caratteristiche_azienda, bilancio)
-    except Exception as e:
-        logging.warning(f"⚠️ Errore durante il matching bandi: {e}")
-        bandi_trovati = []
-
-    try:
-        logging.info("🧠 Generazione relazione finale con Claude")
-        relazione_finale = genera_relazione_con_claude(analisi_finanziaria, bandi_trovati)
-    except Exception as e:
-        logging.error(f"❌ Errore generazione relazione Claude: {e}")
-        return
-
-    try:
-        logging.info("📤 Invio email al destinatario")
-        from email_sender import invia_email_con_risultati
-        invia_email_con_risultati(email_destinatario, relazione_finale)
-    except Exception as e:
-        logging.error(f"❌ Errore invio email: {e}")
-
-
-def start_da_email():
-    logging.info("📬 Avvio lettura email in arrivo")
-    email, file_path = recupera_email_con_allegati()
-    if email and file_path:
-        esegui_analisi_completa(file_path, email)
-
-
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) == 3:
-        esegui_analisi_completa(sys.argv[1], sys.argv[2])
-    else:
-        start_da_email()
+        logging.error("🔥 Errore generico durante l'elaborazione: %s", str(e))
+        os.remove(temp_file_path)
+        return JSONResponse(status_code=500, content={"errore": str(e)})
