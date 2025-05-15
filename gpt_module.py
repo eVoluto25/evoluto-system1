@@ -5,32 +5,7 @@ from indici_analisi import INDICI_REDDITIVITÀ, INDICI_SOLIDITÀ, INDICI_LIQUIDI
 import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def analizza_completo_con_gpt(testo_bilancio):
-    logging.info("\U0001f916 Avvio analisi GPT completa con struttura indici...")
-
-    # Organizzazione degli indici in sezioni strutturate
-    prompt = f"""
-Sei un analista finanziario. Analizza il seguente testo di bilancio, estraendo e commentando gli indici chiave per ciascuna area:
-
-**1. Redditività**
-Indici da calcolare e interpretare:
-- {chr(10).join(['- ' + indice for indice in INDICI_REDDITIVITÀ])}
-
-**2. Solidità**
-Indici da calcolare e interpretare:
-- {chr(10).join(['- ' + indice for indice in INDICI_SOLIDITÀ])}
-
-**3. Liquidità**
-Indici da calcolare e interpretare:
-- {chr(10).join(['- ' + indice for indice in INDICI_LIQUIDITÀ])}
-
-Analizza il testo seguente ed elabora un report ordinato e comprensibile. Concludi con un giudizio sintetico sulla sostenibilità economico-finanziaria dell'azienda.
-
----
-{testo_bilancio}
----
-"""
-    def suddividi_testo_in_blocchi(testo, max_token=1500):
+ def suddividi_testo_in_blocchi(testo, max_token=1500):
         parole = testo.split()
         blocchi = []
         blocco_corrente = []
@@ -61,6 +36,32 @@ Analizza il testo seguente ed elabora un report ordinato e comprensibile. Conclu
         except Exception as e:
             logging.error(f"❌ Errore durante l'elaborazione del blocco {i+1}: {e}")
 
+def analizza_completo_con_gpt(testo_bilancio):
+    logging.info("\U0001f916 Avvio analisi GPT completa con struttura indici...")
+
+    # Organizzazione degli indici in sezioni strutturate
+    prompt = f"""
+Sei un analista finanziario. Analizza il seguente testo di bilancio, estraendo e commentando gli indici chiave per ciascuna area:
+
+**1. Redditività**
+Indici da calcolare e interpretare:
+- {chr(10).join(['- ' + indice for indice in INDICI_REDDITIVITÀ])}
+
+**2. Solidità**
+Indici da calcolare e interpretare:
+- {chr(10).join(['- ' + indice for indice in INDICI_SOLIDITÀ])}
+
+**3. Liquidità**
+Indici da calcolare e interpretare:
+- {chr(10).join(['- ' + indice for indice in INDICI_LIQUIDITÀ])}
+
+Analizza il testo seguente ed elabora un report ordinato e comprensibile. Concludi con un giudizio sintetico sulla sostenibilità economico-finanziaria dell'azienda.
+
+---
+{testo_bilancio}
+---
+"""
+   
     if risultati:
         return "\n\n".join(risultati)
     else:
