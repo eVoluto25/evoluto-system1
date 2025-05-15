@@ -16,7 +16,7 @@ def suddividi_testo_in_blocchi(testo, max_token=3000):
             blocchi.append(" ".join(blocco_corrente))
             blocco_corrente = []
             
-    if blocco corrente:
+    if blocco_corrente:
             blocchi.append(" ".join(blocco_corrente))
            
     return blocchi
