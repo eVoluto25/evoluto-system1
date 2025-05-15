@@ -46,6 +46,8 @@ def analizza_completo_con_gpt(testo_bilancio):
 
     # Organizzazione degli indici in sezioni strutturate
     prompt = f"""
+    f"<p><strong>Denominazione:</strong> {caratteristiche.get('denominazione')}</p>\n"
+f"<p><strong>Amministratore:</strong> {caratteristiche.get('amministratore')}</p>\n"
 Sei un analista finanziario. Analizza il seguente testo di bilancio, estraendo e commentando gli indici chiave per ciascuna area:
 
 <h3>1. Redditività</h3>
