@@ -6,20 +6,19 @@ import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def suddividi_testo_in_blocchi(testo, max_token=3000):
-    righe = testo.splitlines()
+    parole = testo.split()
     blocchi = []
     blocco_corrente = ""
 
-    for riga in righe:
-        if len(blocco_corrente) + len(riga) < max_token:
-            blocco_corrente += riga + "\n"
-        else:
-            blocchi.append(blocco_corrente.strip())
-            blocco_corrente = riga + "\n"
-
-    if blocco_corrente.strip():
-        blocchi.append(blocco_corrente.strip())
-
+    for parola in parole:
+        blocco_corrente.append(parola)
+        if len(" ".join(blocco_corrente)) >= max_token:
+            blocchi.append(" ".join(blocco_corrente))
+            blocco_corrente = []
+            
+    if blocco corrente:
+            blocchi.append(" ".join(blocco_corrente))
+           
     return blocchi
 
 def analizza_completo_con_gpt(testo_bilancio):
