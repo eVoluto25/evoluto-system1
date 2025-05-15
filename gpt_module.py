@@ -47,23 +47,32 @@ def analizza_completo_con_gpt(testo_bilancio):
     prompt = f"""
 Sei un analista finanziario. Analizza il seguente testo di bilancio, estraendo e commentando gli indici chiave per ciascuna area:
 
-**1. Redditività**
-Indici da calcolare e interpretare:
+<h3>1. Redditività</h3>
+<p>Indici da calcolare e interpretare:</p>
 - {chr(10).join(['- ' + indice for indice in INDICI_REDDITIVITÀ])}
 
-**2. Solidità**
-Indici da calcolare e interpretare:
+<h3>2. Solidità</h3>
+<p>Indici da calcolare e interpretare:</p>
 - {chr(10).join(['- ' + indice for indice in INDICI_SOLIDITÀ])}
 
-**3. Liquidità**
-Indici da calcolare e interpretare:
+<h3>3. Liquidità</h3>
+<p>Indici da calcolare e interpretare:</p>
 - {chr(10).join(['- ' + indice for indice in INDICI_LIQUIDITÀ])}
 
-Analizza il testo seguente ed elabora un report ordinato e comprensibile. Concludi con un giudizio sintetico sulla sostenibilità economico-finanziaria dell'azienda.
+<h3>4. DSCR (Debt Service Coverage Ratio)</h3>
+<p>Calcola il DSCR utilizzando i dati disponibili. Spiega cosa indica in termini di capacità di rimborso del debito. Concludi se il valore è positivo, neutro o critico.</p>
 
----
+<h3>5. ESG stimato</h3>
+<p>In base all’attività aziendale (settore ATECO), stima un valore medio ESG del settore e commenta se l’azienda potrebbe migliorare su ambiente, aspetti sociali o governance. Specifica che si tratta di una stima.</p>
+
+<h3>6. Affidabilità bancaria (simulata)</h3>
+<p>Sulla base dei dati di bilancio, fornisci un giudizio descrittivo (es. buono, borderline, critico) come farebbe una banca nel valutare l'affidabilità dell’impresa.</p>
+
+<p>Analizza il testo seguente ed elabora un report ordinato, coerente e professionale. Concludi con un giudizio sintetico sulla sostenibilità economico-finanziaria dell’impresa.</p>
+
+___
 {testo_bilancio}
----
+___
 """
    
     if risultati:
