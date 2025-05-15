@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from extractor import estrai_dati_da_pdf
-from gpt_module import analizza_con_gpt
+from gpt_module import analizza_completo_con_gpt
 from claude_module import genera_relazione_con_claude
 from pipeline import aggiorna_bandi, esegui_match_con_bandi
 
