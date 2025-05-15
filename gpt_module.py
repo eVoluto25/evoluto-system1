@@ -2,7 +2,8 @@ import logging
 import openai
 from indici_analisi import INDICI_REDDITIVITÀ, INDICI_SOLIDITÀ, INDICI_LIQUIDITÀ
 
-openai.api_key = "YOUR_OPENAI_API_KEY"
+import os
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def analizza_completo_con_gpt(testo_bilancio):
     logging.info("\U0001f916 Avvio analisi GPT completa con struttura indici...")
