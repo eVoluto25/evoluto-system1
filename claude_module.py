@@ -1,45 +1,49 @@
+import os
 import logging
-from env_loader import carica_variabili_ambiente
-from output_uploader import salva_output_html
-import anthropic
+import openai  # minuscolo, corretto
 
-def analizza_con_claude(caratteristiche_azienda, analisi_gpt, bandi_compatibili):
-    config = carica_variabili_ambiente()
-    client = anthropic.Anthropic(api_key=config["ANTHROPIC_API_KEY"])
-
-    prompt = crea_prompt_claude(caratteristiche_azienda, analisi_gpt, bandi_compatibili)
-
+def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: list) -> str:
     try:
-        response = client.messages.create(
-            model="claude-3-opus-20240229",
-            max_tokens=1800,
-            temperature=0.3,
-            system="Sei un esperto di finanza agevolata e analisi aziendale. Confronta i bandi con l'azienda.",
-            messages=[{"role": "user", "content": prompt}]
+        logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
+
+        prompt = (
+            f"Hai ricevuto un'analisi finanziaria dell'azienda basata sul suo bilancio:\n\n"
+            f"📊 Analisi GPT:\n{analisi_gpt}\n\n"
+            f"L'azienda ha queste caratteristiche:\n"
+            f"- Forma giuridica: {caratteristiche.get('forma_giuridica')}\n"
+            f"- Codice ATECO: {caratteristiche.get('codice_ateco')}\n"
+            f"- Attività prevalente: {caratteristiche.get('attivita_prevalente')}\n\n"
+            f"I bandi compatibili trovati sono:\n"
+            f"{formatta_bandi(bandi)}\n\n"
+            f"🎯 Elabora una relazione sintetica che identifichi:\n"
+            f"1. I bandi più coerenti con la situazione economica dell’azienda\n"
+            f"2. Perché sono rilevanti\n"
+            f"3. Quali benefici potrebbe ottenere\n"
+            f"Usa uno stile chiaro, professionale e numerato."
         )
 
-        contenuto = response.content[0].text
-        if not contenuto.strip():
-            raise ValueError("Claude ha restituito una risposta vuota")
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4
+        )
 
-        return contenuto
+        return response.choices[0].message["content"]
 
     except Exception as e:
-        logging.error(f"Errore Claude: {e}")
-        return "Errore nella generazione della risposta Claude."
+        logging.error(f"❌ Errore Claude → {e}")
+        return "Errore durante il confronto con i bandi."
 
-def crea_prompt_claude(azienda, analisi, bandi):
-    intestazione = f"""L'azienda analizzata ha le seguenti caratteristiche:
-- Forma giuridica: {azienda.get('forma_giuridica')}
-- Codice ATECO: {azienda.get('codice_ateco')}
-- Attività: {azienda.get('attivita_prevalente')}
+def formatta_bandi(bandi: list) -> str:
+    if not bandi:
+        return "❌ Nessun bando disponibile per l’azienda."
 
-Analisi GPT:
-{analisi}
-
-Bandi compatibili filtrati:
-""" + "\n".join([f"- {b['titolo']} ({b.get('forma_agevolazione', '')})" for b in bandi[:10]])
-
-    chiusura = "\n\nFornisci una sintesi utile e personalizzata per l'imprenditore."
-
-    return intestazione + chiusura
+    righe = []
+    for bando in bandi:
+        righe.append(
+            f"🔹 {bando.get('titolo', 'Titolo non disponibile')} — "
+            f"Contributo: {bando.get('contributo', 'N/D')} — "
+            f"Scadenza: {bando.get('scadenza', 'N/D')}"
+        )
+    return "\n".join(righe)
