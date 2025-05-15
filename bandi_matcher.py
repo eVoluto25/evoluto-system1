@@ -1,7 +1,7 @@
 import json
 import logging
 
-def confronta_con_bandi(caratteristiche_azienda):
+def trova_bandi_compatibili(caratteristiche_azienda):
     try:
         with open("bandi_bandi.json", "r", encoding="utf-8") as f:
             bandi = json.load(f)
