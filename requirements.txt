@@ -11,3 +11,4 @@ anthropic
 tiktoken
 requests
 beautifulsoup4
+boto3
