@@ -38,7 +38,7 @@ async def analizza_pdf(
 
         # Analisi GPT
         logging.info("🤖 Chiamata a GPT in corso...")
-        analisi_finanziaria = analizza_con_gpt(bilancio)
+        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
 
         if not analisi_finanziaria or analisi_finanziaria.strip() == "":
             logging.error("❌ GPT ha restituito una risposta vuota o nulla.")
