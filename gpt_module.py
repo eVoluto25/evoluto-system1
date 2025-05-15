@@ -1,47 +1,34 @@
 import openai
 import logging
-from env_loader import carica_variabili_ambiente
-from output_uploader import salva_output_html
 
-def analizza_con_gpt(dati):
-    config = carica_variabili_ambiente()
-    openai.api_key = config["OPENAI_API_KEY"]
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    logging.info(f"➡️ Bilancio ricevuto per GPT: {dati}")
-
-    prompt = crea_prompt_gpt(dati)
-
+def analizza_completo_con_gpt(contenuto_pdf: str) -> str:
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            temperature=0.3,
-            max_tokens=1800,
-            messages=[
-                {"role": "system", "content": "Sei un esperto di analisi aziendale."},
-                {"role": "user", "content": prompt}
-            ]
+        logging.info("🤖 Chiamata a GPT-3.5 in corso...")
+
+        prompt = (
+            "Agisci come un analista esperto di bilanci aziendali."
+            " Ricevi di seguito il contenuto di un documento PDF estratto da una Visura Camerale e dal Bilancio."
+            " Il tuo compito è analizzare i dati e sintetizzare eventuali criticità, anomalie o spunti utili."
+            " Non limitarti a descrivere: evidenzia ciò che potrebbe destare attenzione o preoccupazione per un consulente o un investitore."
+            "\n\n---\n\n"
+            f"{contenuto_pdf}"
+            "\n\n---\n\n"
+            "Rispondi con un'analisi completa, divisa in paragrafi chiari con titoli."
         )
 
-        contenuto = response['choices'][0]['message']['content']
-        logging.info(f"✅ Output GPT ricevuto ({len(contenuto)} caratteri)")
+        risposta = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=3900,
+        )
 
-        if not contenuto or contenuto.strip() == "":
-            raise ValueError("❌ GPT ha restituito una risposta vuota")
-
+        contenuto = risposta.choices[0].message.content
+        logging.info("✅ GPT ha restituito una risposta valida.")
         return contenuto
 
     except Exception as e:
-        logging.error(f"❌ Errore durante la generazione GPT: {e}")
-        return None
-
-def crea_prompt_gpt(dati):
-    return f"""Analizza i seguenti dati di bilancio dell'azienda:
-
-- Ricavi: {dati.get('ricavi')}
-- EBITDA: {dati.get('ebitda')}
-- Utile netto: {dati.get('utile_netto')}
-- Attivo totale: {dati.get('attivo_totale')}
-- Patrimonio netto: {dati.get('patrimonio_netto')}
-
-Commenta gli indici principali e segnala eventuali criticità.
-"""  # chiusura f-string
+        logging.error(f"❌ Errore durante l'elaborazione con GPT: {e}")
+        return "[ERRORE GPT]"
