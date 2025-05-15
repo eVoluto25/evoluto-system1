@@ -61,17 +61,17 @@ async def analizza_pdf(
         relazione_finale = genera_relazione_con_claude(analisi_finanziaria, bandi_compatibili)
 
         # Pulizia file temporaneo
-        os.remove(temp_file_path)
+        try:
+           os.remove(temp_file_path)
+        except Exception as e:
+           logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
 
-        # Pulizia file temporaneo
-os.remove(temp_file_path)
-
-# Costruzione payload da inviare a Make
-payload = {
-    "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
-    "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-    "outputGpt": link_gpt,
-    "outputClaude": link_claude
+        # Costruzione payload da inviare a Make
+        payload = {
+        "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+        "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+        "outputGpt": link_gpt,
+        "outputClaude": link_claude
 }
 
 # Invio al webhook Make
