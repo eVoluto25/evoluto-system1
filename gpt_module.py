@@ -5,22 +5,6 @@ from indici_analisi import INDICI_REDDITIVITÀ, INDICI_SOLIDITÀ, INDICI_LIQUIDI
 import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def suddividi_testo_in_blocchi(testo, max_token=3000):
-    parole = testo.split()
-    blocchi = []
-    blocco_corrente = []
-
-    for parola in parole:
-        blocco_corrente.append(parola)
-        if len(" ".join(blocco_corrente)) >= max_token:
-            blocchi.append(" ".join(blocco_corrente))
-            blocco_corrente = []
-            
-    if blocco_corrente:
-            blocchi.append(" ".join(blocco_corrente))
-           
-    return blocchi
-
 def analizza_completo_con_gpt(testo_bilancio):
     logging.info("\U0001f916 Avvio analisi GPT completa con struttura indici...")
 
