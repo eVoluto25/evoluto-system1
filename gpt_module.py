@@ -75,7 +75,7 @@ ___
 {testo_bilancio}
 ___
 """
-
+    if risultati:
         # Salva il testo in HTML temporaneo
     nome_file = f"gpt_report_{uuid.uuid4().hex}.html"
     contenuto_html = f"<html><body>{testo_output}</body></html>"
@@ -101,10 +101,6 @@ ___
 
     return url_pubblico
     
-    if risultati:
-        return "\n\n".join(risultati)
-    else:
-        return None
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
