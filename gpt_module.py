@@ -30,6 +30,41 @@ Analizza il testo seguente ed elabora un report ordinato e comprensibile. Conclu
 {testo_bilancio}
 ---
 """
+    def suddividi_testo_in_blocchi(testo, max_token=1500):
+    blocchi = []
+    parole = testo.split()
+    blocco_corrente = []
+
+    for parola in parole:
+        blocco_corrente.append(parola)
+        if len(blocco_corrente) >= max_token:
+            blocchi.append(" ".join(blocco_corrente))
+            blocco_corrente = []
+
+    if blocco_corrente:
+        blocchi.append(" ".join(blocco_corrente))
+
+    return blocchi
+    
+    def analizza_blocchi_gpt(testo_bilancio):
+    blocchi = suddividi_testo_in_blocchi(testo_bilancio)
+    risultati = []
+
+    for i, blocco in enumerate(blocchi):
+        logging.info(f"🔄 GPT – Elaborazione blocco {i+1}/{len(blocchi)}")
+        try:
+            risposta = analizza_completo_con_gpt(blocco)
+            if risposta:
+                risultati.append(risposta)
+            else:
+                logging.warning(f"⚠️ Blocco {i+1} – Nessuna risposta")
+        except Exception as e:
+            logging.error(f"❌ Errore durante l'elaborazione del blocco {i+1}: {e}")
+
+    if risultati:
+        return "\n\n".join(risultati)
+    else:
+        return None
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
