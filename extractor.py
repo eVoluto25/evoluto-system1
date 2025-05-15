@@ -21,6 +21,8 @@ def estrai_dati_da_pdf(percorso_pdf):
         "forma_giuridica": estrai_valore(testo, r"Forma giuridica[:\s]+(.+?)\n"),
         "codice_ateco": estrai_valore(testo, r"Codice Ateco[:\s]+(.+?)\n"),
         "attivita_prevalente": estrai_valore(testo, r"Attività prevalente[:\s]+(.+?)\n")
+        "denominazione": estrai_valore(testo, r"Denominazione[:\s]+(.+?)\n"),
+        "amministratore": estrai_valore(testo, r"Amministratore[:\s]+(.+?)\n"),
     }
 
     bilancio = {
