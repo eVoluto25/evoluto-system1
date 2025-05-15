@@ -38,13 +38,21 @@ def genera_paragrafo_bandi_claude(azienda: dict, bandi: list) -> str:
             f"   Ente: {b.get('Ente', 'N/A')}\n\n"
         )
 
-    prompt = PROMPT_BASE.format(
-        forma=azienda.get("forma_giuridica", "SRL").upper(),
-        ateco=azienda.get("codice_ateco", "00.00"),
-        regione=azienda.get("regione", ""),
-        dimensione=azienda.get("dimensione_impresa", ""),
-        elenco_bandi=elenco.strip()
-    )
+    prompt = (
+    f"<h2>📊 Analisi aziendale</h2>"
+    f"<p>Forma giuridica: <strong>{azienda.get('forma_giuridica', 'N/D')}</strong><br>"
+    f"Codice ATECO: <strong>{azienda.get('codice_ateco', 'N/D')}</strong><br>"
+    f"Regione: <strong>{azienda.get('regione', 'N/D')}</strong><br>"
+    f"Dimensione: <strong>{azienda.get('dimensione_impresa', 'N/D')}</strong></p>"
+
+    f"<h2>🎯 Bandi compatibili</h2>"
+    f"<pre>{elenco.strip()}</pre>"
+
+    f"<h2>📌 Richiesta</h2>"
+    f"<p>Spiega quali bandi sono più coerenti con la situazione dell'azienda, "
+    f"quali sono i benefici ottenibili e perché conviene valutarli.<br>"
+    f>Usa uno stile ordinato, professionale e chiaro. Rispondi in HTML con <code>&lt;h2&gt;</code> e <code>&lt;p&gt;</code>.</p>"
+)
 
     response = client.messages.create(
         model="claude-3-opus-20240229",
