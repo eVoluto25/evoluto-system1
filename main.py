@@ -8,6 +8,11 @@ from pipeline import esegui_pipeline
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
+@app.get("/")
+def home():
+    return {"message": "Server attivo. eVoluto System live."}
+
+
 @app.post("/analizza-pdf")
 async def analizza_pdf(upload_1: UploadFile = File(...), email_1: str = Form(...)):
     file = upload_1
