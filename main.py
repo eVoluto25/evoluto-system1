@@ -9,7 +9,7 @@ from pipeline import aggiorna_bandi, esegui_analisi_completa
 
 app = FastAPI()
 @app.get("/")
-def root():
+def root_head():
     return {"status": "✅ eVoluto backend attivo", "version": "1.0"}
 
 @app.post("/analizza-pdf")
