@@ -31,8 +31,8 @@ Analizza il testo seguente ed elabora un report ordinato e comprensibile. Conclu
 ---
 """
     def suddividi_testo_in_blocchi(testo, max_token=1500):
-        blocchi = []
         parole = testo.split()
+        blocchi = []
         blocco_corrente = []
 
     for parola in parole:
