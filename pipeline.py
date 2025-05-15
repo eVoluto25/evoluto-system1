@@ -6,20 +6,26 @@ from bandi_matcher import trova_bandi_compatibili
 from aggiorna_bandi import aggiorna_bandi
 
 def esegui_analisi_completa(percorso_pdf, email_destinatario):
-    logging.info("🚀 Avvio pipeline: Estrazione → GPT → Bandi → Claude")
-
     try:
-        logging.info("📄 Estrazione dati aziendali da PDF")
+        logging.info("📥 Avvio esecuzione analisi completa")
+
+        # Estrazione dati dal PDF
         caratteristiche_azienda, bilancio = estrai_dati_da_pdf(percorso_pdf)
-        # Analisi GPT del bilancio
-        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
-        logging.info(f"📊 Analisi GPT completata")
+        logging.info("📄 Estrazione PDF completata")
 
-        # Ricerca bandi compatibili
+        # Analisi GPT a blocchi
+        analisi_finanziaria = analizza_blocchi_gpt(bilancio)
+        if not analisi_finanziaria:
+            logging.error("❌ GPT ha fallito – Claude non verrà chiamato.")
+            return {"esito": "errore", "fase": "gpt", "dettaglio": "Nessuna risposta utile da GPT"}
+
+        # Match bandi
         bandi_compatibili = trova_bandi_compatibili(caratteristiche_azienda, bilancio)
-        logging.info(f"🎯 Bandi compatibili trovati: {len(bandi_compatibili)}")
+        if not bandi_compatibili:
+            logging.warning("⚠️ Nessun bando compatibile – Claude non verrà chiamato.")
+            return {"esito": "errore", "fase": "matching", "dettaglio": "Nessun bando individuato"}
 
-        # Generazione relazione finale con Claude
+        # Generazione relazione con Claude
         relazione_html = genera_relazione_con_claude(
             caratteristiche_azienda,
             bilancio,
@@ -27,13 +33,13 @@ def esegui_analisi_completa(percorso_pdf, email_destinatario):
             bandi_compatibili,
             email_destinatario
         )
-        logging.info("📄 Relazione finale generata e inviata con successo")
-        
-        logging.info(f"📌 Caratteristiche: {caratteristiche_azienda}")
-        logging.info(f"📊 Bilancio: {bilancio}")
+
+        logging.info("📤 Relazione HTML generata e inviata con successo.")
+        return {"esito": "ok"}
+
     except Exception as e:
-        logging.error(f"❌ Errore durante l'estrazione: {e}")
-        return {"esito": "errore", "fase": "estrazione", "dettaglio": str(e)}
+        logging.exception(f"🔥 Errore generico nella pipeline: {e}")
+        return {"esito": "errore", "fase": "generale", "dettaglio": str(e)}
 
     try:
         logging.info("🌐 Aggiornamento bandi automatico in corso")
