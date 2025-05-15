@@ -1,6 +1,8 @@
 import os
 import logging
 import openai  # minuscolo, corretto
+from moduli.storage_supabase import upload_claude_to_supabase
+from datetime import datetime
 
 def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: list) -> str:
     try:
@@ -30,7 +32,34 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
             temperature=0.4
         )
 
-        return response.choices[0].message["content"]
+def upload_claude_to_supabase(contenuto_html: str, nome_file: str) -> str:
+    import os
+    import requests
+
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_bucket = os.getenv("SUPABASE_BUCKET")
+    supabase_api_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+    if not all([supabase_url, supabase_bucket, supabase_api_key]):
+        raise EnvironmentError("Variabili d'ambiente Supabase mancanti")
+
+    headers = {
+        "Authorization": f"Bearer {supabase_api_key}",
+        "Content-Type": "text/html"
+    }
+
+    path_remoto = f"output_claude/{nome_file}.html"
+    url_upload = f"{supabase_url}/storage/v1/object/{supabase_bucket}/{path_remoto}"
+
+    response = requests.put(url_upload, headers=headers, data=contenuto_html.encode("utf-8"))
+    if response.status_code not in [200, 201]:
+        raise RuntimeError(f"Errore upload Claude: {response.status_code} - {response.text}")
+
+    url_pubblico = f"{supabase_url}/storage/v1/object/public/{supabase_bucket}/{path_remoto}"
+      
+       contenuto_html = response.choices[0].message["content"]
+       nome_file = f"output_claude_{datetime.now().strftime('%Y%m%d%H%M%S')}.html"
+       return upload_claude_to_supabase(contenuto_html, nome_file)
 
     except Exception as e:
         logging.error(f"❌ Errore Claude → {e}")
