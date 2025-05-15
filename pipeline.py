@@ -11,6 +11,24 @@ def esegui_analisi_completa(percorso_pdf, email_destinatario):
     try:
         logging.info("📄 Estrazione dati aziendali da PDF")
         caratteristiche_azienda, bilancio = estrai_dati_da_pdf(percorso_pdf)
+        # Analisi GPT del bilancio
+        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
+        logging.info(f"📊 Analisi GPT completata")
+
+        # Ricerca bandi compatibili
+        bandi_compatibili = trova_bandi_compatibili(caratteristiche_azienda, bilancio)
+        logging.info(f"🎯 Bandi compatibili trovati: {len(bandi_compatibili)}")
+
+        # Generazione relazione finale con Claude
+        relazione_html = genera_relazione_con_claude(
+            caratteristiche_azienda,
+            bilancio,
+            analisi_finanziaria,
+            bandi_compatibili,
+            email_destinatario
+        )
+        logging.info("📄 Relazione finale generata e inviata con successo")
+        
         logging.info(f"📌 Caratteristiche: {caratteristiche_azienda}")
         logging.info(f"📊 Bilancio: {bilancio}")
     except Exception as e:
