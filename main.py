@@ -61,26 +61,17 @@ async def analizza_pdf(
             "outputClaude": link_claude
         }
         invia_a_make(payload)
+        
+   except Exception as e:
+    logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+    try:
+        os.remove(temp_file_path)
     except Exception as e:
-        logging.error(f"❌ Errore durante l'invio a Make: {e}")
-        try:
-            os.remove(temp_file_path)
-        except Exception as e:
-            logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
-        return JSONResponse(status_code=500, content={"errore": str(e)})
-            os.remove(temp_file_path)
-        except Exception as e:
-            logging.warning(f"❌ Errore durante l'invio a Make: {e}")
-
-        return {
-            "analisi": analisi_finanziaria,
-            "bandi": bandi_compatibili,
-            "relazione_finale": genera_relazione_con_claude(analisi_finanziaria, caratteristiche_azienda, bandi_compatibili)
-        }
-
-    except Exception as e:
-        logging.error("🔥 Errore generico durante l'elaborazione: %s", str(e))
-            os.remove(temp_file_path)
-        except:
-            pass
-        return JSONResponse(status_code=500, content={"errore": str(e)})
+        logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
+    return {
+        "analisi": analisi_finanziaria,
+        "bandi": bandi_compatibili,
+        "relazione_finale": genera_relazione_con_claude(
+            analisi_finanziaria, caratteristiche_azienda, bandi_compatibili
+        )
+    } 
