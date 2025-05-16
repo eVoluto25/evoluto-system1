@@ -3,7 +3,7 @@ from extractor import estrai_dati_da_pdf
 from gpt_module import analizza_completo_con_gpt
 from claude_module import genera_relazione_con_claude
 from bandi_matcher import trova_bandi_compatibili
-from aggiorna_bandi import aggiorna_bandi
+from aggiorna_bandi import formatta_bandi
 
 def esegui_analisi_completa(percorso_pdf, email_destinatario):
     try:
