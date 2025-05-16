@@ -16,7 +16,7 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
     - Forma giuridica: {caratteristiche.get("forma_giuridica", "N/D")}
     - Amministratore: {caratteristiche.get("amministratore", "N/D")}
     - Denominazione: {caratteristiche.get("denominazione", "N/D")}
-"""
+    """
 
     f"📊 Analisi economico-finanziaria dell'impresa (GPT):
 {analisi_gpt}
