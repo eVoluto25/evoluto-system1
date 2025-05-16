@@ -66,17 +66,6 @@ except Exception as e:
     logging.error(f"❌ Errore durante l'invio a Make: {e}")
 
         try:
-            payload = {
-                "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
-                "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-                "outputGpt": link_gpt,
-                "outputClaude": link_claude
-            }
-            invia_a_make(payload)
-        except Exception as e:
-            logging.error(f"⚠️ Errore invio a Make: {e}")
-
-        try:
             os.remove(temp_file_path)
         except Exception as e:
             logging.warning(f"❌ Errore durante l'invio a Make: {e}")
