@@ -21,7 +21,7 @@ def suddividi_testo_in_blocchi(testo, max_token=1500):
 
     return blocchi
 
-def genera_prompt_bancabile(testo_estratto, caratteristiche_azienda):
+def genera_prompt_bancabile(testo, caratteristiche_azienda):
     prompt = f"""
 Sei un CFO esperto in analisi bancarie. Ricevi un bilancio aziendale e devi fornire una valutazione tecnica, sintetica e leggibile da un direttore bancario. 
 📌 Dati aziendali:
