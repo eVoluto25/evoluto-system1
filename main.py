@@ -65,9 +65,10 @@ try:
 
     except Exception as e:
         logging.error(f"❌ Errore durante l'invio a Make: {e}")
+        try:
             os.remove(temp_file_path)
         except Exception as e:
-            logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+            logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
 
         return {
             "analisi": analisi_finanziaria,
