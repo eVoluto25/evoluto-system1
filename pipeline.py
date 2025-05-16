@@ -50,7 +50,7 @@ def esegui_analisi_completa(percorso_pdf, email_destinatario):
 
     try:
         logging.info("🧠 Analisi GPT in corso")
-        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
+        analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
         if not analisi_finanziaria:
             raise ValueError("Risposta GPT vuota")
         logging.info("✅ Analisi GPT completata")
