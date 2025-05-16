@@ -1,5 +1,3 @@
-# bandi_utils.py
-
 from aggiorna_bandi import file_aggiornato, scarica_file, DATASET_URL, ETAG_FILE, DATASET_FILE
 
 def formatta_bandi():
