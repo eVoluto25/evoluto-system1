@@ -70,7 +70,7 @@ async def analizza_pdf(
         return {
             "analisi": analisi_finanziaria,
             "bandi": bandi_compatibili,
-            "relazione_finale = genera_relazione_con_claude(analisi_finanziaria, caratteristiche_azienda, bandi_compatibili)
+            "relazione_finale": genera_relazione_con_claude(analisi_finanziaria, caratteristiche_azienda, bandi_compatibili)
         }
 
     except Exception as e:
