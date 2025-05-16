@@ -63,15 +63,15 @@ async def analizza_pdf(
         invia_a_make(payload)
         
     except Exception as e:
-    logging.warning(f"❌ Errore durante l'invio a Make: {e}")
-    try:
-        os.remove(temp_file_path)
-    except Exception as e:
-        logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
-    return {
-        "analisi": analisi_finanziaria,
-        "bandi": bandi_compatibili,
-        "relazione_finale": genera_relazione_con_claude(
-            analisi_finanziaria, caratteristiche_azienda, bandi_compatibili
-        )
-    } 
+        logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+        try:
+            os.remove(temp_file_path)
+        except Exception as e:
+            logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
+        return {
+            "analisi": analisi_finanziaria,
+            "bandi": bandi_compatibili,
+            "relazione_finale": genera_relazione_con_claude(
+                analisi_finanziaria, caratteristiche_azienda, bandi_compatibili
+            )
+        }  
