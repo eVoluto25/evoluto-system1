@@ -62,7 +62,7 @@ async def analizza_pdf(
         }
         invia_a_make(payload)
         
-   except Exception as e:
+    except Exception as e:
     logging.warning(f"❌ Errore durante l'invio a Make: {e}")
     try:
         os.remove(temp_file_path)
