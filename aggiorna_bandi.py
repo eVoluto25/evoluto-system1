@@ -1,7 +1,6 @@
 import os
 import requests
 import csv
-from aggiorna_bandi import scarica_e_formatta_bandi
 from datetime import datetime
 
 DATASET_URL = "https://www.incentivi.gov.it/sites/default/files/open-data/2025-4-5_opendata-export.csv"
