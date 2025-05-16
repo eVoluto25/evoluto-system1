@@ -51,6 +51,20 @@ async def analizza_pdf(
         logging.info("📎 Generazione relazione finale tramite Claude")
         relazione_finale = genera_relazione_con_claude(analisi_finanziaria, caratteristiche_azienda, bandi_compatibili)
 
+        html_claude = f"<html><body>{relazione_finale}</body></html>"
+        link_claude = upload_html_to_supabase(html_claude, "output_claude.html")
+
+try:
+    payload = {
+        "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+        "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+        "outputGpt": link_gpt,
+        "outputClaude": link_claude
+    }
+    invia_a_make(payload)
+except Exception as e:
+    logging.error(f"❌ Errore durante l'invio a Make: {e}")
+
         try:
             payload = {
                 "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
