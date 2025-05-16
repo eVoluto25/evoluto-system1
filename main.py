@@ -75,7 +75,6 @@ async def analizza_pdf(
 }
 
 # Invio al webhook Make
-try:
     response = requests.post("https://hook.eu2.make.com/tuo_webhook", json=payload)
     response.raise_for_status()
     print("✅ Dati inviati correttamente a Make.")
