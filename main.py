@@ -26,7 +26,6 @@ async def analizza_pdf(
     with open(temp_file_path, "wb") as f:
         f.write(await upload_1.read())
 
-    try:
         logging.info("🚀 Inizio pipeline completa")
 
         caratteristiche_azienda, bilancio = estrai_dati_da_pdf(temp_file_path)
@@ -55,17 +54,17 @@ async def analizza_pdf(
         link_claude = upload_html_to_supabase(html_claude, "output_claude.html")
 
 try:
-    payload = {
-        "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
-        "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-        "outputGpt": link_gpt,
-        "outputClaude": link_claude
-    }
-    invia_a_make(payload)
-except Exception as e:
-    logging.error(f"❌ Errore durante l'invio a Make: {e}")
+    try:
+        payload = {
+            "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+            "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+            "outputGpt": link_gpt,
+            "outputClaude": link_claude
+        }
+        invia_a_make(payload)
 
-        try:
+    except Exception as e:
+        logging.error(f"❌ Errore durante l'invio a Make: {e}")
             os.remove(temp_file_path)
         except Exception as e:
             logging.warning(f"❌ Errore durante l'invio a Make: {e}")
