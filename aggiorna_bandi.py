@@ -39,4 +39,4 @@ def formatta_bandi():
 
 
 if __name__ == "__main__":
-    aggiorna_bandi()
+    formatta_bandi()
