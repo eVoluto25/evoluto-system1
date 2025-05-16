@@ -68,6 +68,11 @@ Per ciascun indice, calcola il valore numerico e affianca un giudizio sintetico 
 <h4>6. Voto di affidabilità bancaria</h4>
 <p>Esprimi un voto finale sintetico da CFO destinato a un comitato crediti. Usa una scala A – B – C – D – E con motivazione tecnica stringata.</p>
 
+<h4>7. Valutazione Sostenibilità ed ESG</h4>
+<p>Valuta, sulla base del settore di appartenenza (codice ATECO) e delle informazioni disponibili nel bilancio, il livello di sostenibilità ESG (ambientale, sociale, governance).</p>
+<p>Se i dati non sono sufficienti, esegui una stima basata sul settore e sulla forma giuridica dell’impresa.</p>
+<p>Esprimi il giudizio finale con una scala sintetica: 🔵 Alto – 🟢 Buono – 🟡 Medio – 🟠 Basso – 🔴 Critico</p>
+
 <h4>Formato</h4>
 <p>Restituisci la risposta in formato HTML, usa &lt;ul&gt; per le liste e &lt;h4&gt; per i blocchi. Nessun commento narrativo: solo dati e valutazioni sintetiche. Ogni indice deve avere accanto il voto.</p>
 
