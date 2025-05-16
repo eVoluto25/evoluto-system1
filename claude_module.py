@@ -8,7 +8,8 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
       
-    f"L'azienda presenta le seguenti caratteristiche ufficiali:"
+    prompt = f"""
+    L'azienda presenta le seguenti caratteristiche ufficiali:"
     - Regione: {caratteristiche.get("regione", "N/D")}
     - Provincia: {caratteristiche.get("provincia", "N/D")}
     - Codice ATECO: {caratteristiche.get("codice_ateco", "N/D")}
