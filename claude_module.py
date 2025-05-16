@@ -8,20 +8,15 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
       
-prompt = (
     f"L'azienda presenta le seguenti caratteristiche ufficiali:"
-"
-    f"- Denominazione: {caratteristiche.get('denominazione', 'N/D')}
-"
-    f"- Amministratore: {caratteristiche.get('amministratore', 'N/D')}
-"
-    f"- Forma giuridica: {caratteristiche.get('forma_giuridica')}
-"
-    f"- Codice ATECO: {caratteristiche.get('codice_ateco')}
-"
-    f"- Attività prevalente: {caratteristiche.get('attivita_prevalente')}
+    - Regione: {caratteristiche.get("regione", "N/D")}
+    - Provincia: {caratteristiche.get("provincia", "N/D")}
+    - Codice ATECO: {caratteristiche.get("codice_ateco", "N/D")}
+    - Forma giuridica: {caratteristiche.get("forma_giuridica", "N/D")}
+    - Amministratore: {caratteristiche.get("amministratore", "N/D")}
+    - Denominazione: {caratteristiche.get("denominazione", "N/D")}
+"""
 
-"
     f"📊 Analisi economico-finanziaria dell'impresa (GPT):
 {analisi_gpt}
 
