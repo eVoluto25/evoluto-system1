@@ -1,3 +1,4 @@
+import logging
 def genera_relazione_con_claude(analisi_gpt: str, caratteristiche_azienda: dict, bandi: list) -> str:
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
