@@ -1,5 +1,6 @@
 import os
 import boto3
+from supabase_uploader import upload_html_to_supabase
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,7 +10,7 @@ SUPABASE_ACCESS_KEY = os.getenv("SUPABASE_S3_ACCESS_KEY")
 SUPABASE_SECRET_KEY = os.getenv("SUPABASE_S3_SECRET_KEY")
 SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET_NAME")
 
-def upload_to_supabase(local_file_path, supabase_path):
+def upload_html_to_supabase(contenuto_html: str, nome_file: str) -> str:
     session = boto3.session.Session()
     s3 = session.client(
         service_name='s3',
