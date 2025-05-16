@@ -51,8 +51,8 @@ async def analizza_pdf(
             payload = {
                 "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
                 "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-                "outputGpt": analisi_finanziaria,
-                "outputClaude": relazione_finale
+                "outputGpt": link_gpt,
+                "outputClaude": link_claude
             }
             invia_a_make(payload)
         except Exception as e:
