@@ -10,9 +10,9 @@ def upload_html_to_supabase(contenuto_html: str, nome_file: str) -> str:
     :param nome_file: Nome del file HTML (senza estensione)
     :return: URL pubblico del file caricato
     """
-    supabase_url = os.getenv("SUPABASE_URL")
-    supabase_bucket = os.getenv("SUPABASE_BUCKET")
-    supabase_api_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    supabase_url = os.getenv("SUPABASE_S3_URL")
+    supabase_bucket = os.getenv("SUPABASE_BUCKET_NAME")
+    supabase_api_key = os.getenv("SUPABASE_S3_SECRET_KEY")
 
     if not all([supabase_url, supabase_bucket, supabase_api_key]):
         raise EnvironmentError("Variabili d'ambiente Supabase mancanti")
