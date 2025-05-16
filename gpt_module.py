@@ -86,7 +86,7 @@ Dati del bilancio:
 """
     return prompt
 
-def analizza_completo_con_gpt(testo):
+def analizza_completo_con_gpt(testo, caratteristiche_azienda):
     prompt = genera_prompt_bancabile(testo_estratto, caratteristiche_azienda)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -106,7 +106,7 @@ def analizza_blocchi_gpt(testo_bilancio):
     for i, blocco in enumerate(blocchi):
         logging.info(f"🔄 GPT – Elaborazione blocco {i+1}/{len(blocchi)}")
         try:
-            risposta = analizza_completo_con_gpt(blocco)
+            risposta = analizza_completo_con_gpt(blocco, caratteristiche_azienda)
             if risposta:
                 risultati.append(risposta)
             else:
