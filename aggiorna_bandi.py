@@ -1,6 +1,7 @@
 import os
 import requests
 import csv
+from aggiorna_bandi import scarica_e_formatta_bandi
 from datetime import datetime
 
 DATASET_URL = "https://www.incentivi.gov.it/sites/default/files/open-data/2025-4-5_opendata-export.csv"
@@ -31,11 +32,11 @@ def scarica_file(url, destinazione):
     print(f"✅ File aggiornato scaricato in {destinazione}")
 
 
-def formatta_bandi():():
+def formatta_bandi():
     if file_aggiornato(DATASET_URL, ETAG_FILE):
         scarica_file(DATASET_URL, DATASET_FILE)
     else:
-        print("⏩ Nessun aggiornamento disponibile. Dataset invariato.")
+        print("⏭️ Nessun aggiornamento disponibile. Dataset invariato.")
 
 
 if __name__ == "__main__":
