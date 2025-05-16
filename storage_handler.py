@@ -23,7 +23,7 @@ def upload_html_to_supabase(contenuto_html: str, nome_file: str) -> str:
     url_upload = f"{supabase_url}/storage/v1/object/{supabase_bucket}/{path_remoto}"
 
     headers = {
-    "Authorization": supabase_access_key,  # ✅ solo la chiave, senza Bearer
+    "Authorization": f"Bearer {supabase_access_key}",
     "Content-Type": "text/html; charset=utf-8"
     }
 
