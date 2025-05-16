@@ -74,12 +74,12 @@ except Exception as e:
             }
             invia_a_make(payload)
         except Exception as e:
-            logging.warning(f"⚠️ Errore invio a Make: {e}")
+            logging.error(f"⚠️ Errore invio a Make: {e}")
 
         try:
             os.remove(temp_file_path)
         except Exception as e:
-            logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
+            logging.warning(f"❌ Errore durante l'invio a Make: {e}")
 
         return {
             "analisi": analisi_finanziaria,
