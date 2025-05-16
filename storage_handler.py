@@ -17,6 +17,11 @@ def upload_html_to_supabase(contenuto_html: str, nome_file: str) -> str:
     if not all([supabase_url, supabase_bucket, supabase_access_key]):
         raise EnvironmentError("Variabili d'ambiente Supabase mancanti")
 
+    headers = {
+        "Authorization": supabase_access_key,  # ✅ NO Bearer!
+        "Content-Type": "text/html; charset=utf-8"
+    }
+
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     path_remoto = f"{nome_file}_{timestamp}.html"
     url_upload = f"{supabase_url}/storage/v1/object/{supabase_bucket}/{path_remoto}"
