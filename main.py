@@ -40,7 +40,7 @@ async def analizza_pdf(
         analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
         link_gpt = upload_html_to_supabase(html_finale, "output_gpt.html")
         f"<html><body>{analisi_finanziaria}</body></html>",
-        filename_prefix="output_gpt"
+        "output_gpt.html"
 )
         if not analisi_finanziaria or analisi_finanziaria.strip() == "":
             logging.error("❌ GPT ha restituito una risposta vuota o nulla.")
