@@ -53,7 +53,6 @@ async def analizza_pdf(
         html_claude = f"<html><body>{relazione_finale}</body></html>"
         link_claude = upload_html_to_supabase(html_claude, "output_claude.html")
 
-try:
     try:
         payload = {
             "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
@@ -62,13 +61,16 @@ try:
             "outputClaude": link_claude
         }
         invia_a_make(payload)
-
     except Exception as e:
         logging.error(f"❌ Errore durante l'invio a Make: {e}")
         try:
             os.remove(temp_file_path)
         except Exception as e:
             logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
+        return JSONResponse(status_code=500, content={"errore": str(e)})
+            os.remove(temp_file_path)
+        except Exception as e:
+            logging.warning(f"❌ Errore durante l'invio a Make: {e}")
 
         return {
             "analisi": analisi_finanziaria,
@@ -78,7 +80,6 @@ try:
 
     except Exception as e:
         logging.error("🔥 Errore generico durante l'elaborazione: %s", str(e))
-        try:
             os.remove(temp_file_path)
         except:
             pass
