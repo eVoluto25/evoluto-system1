@@ -1,7 +1,7 @@
 import logging
 import os
 import anthropic
-from aggiorna_bandi import formatta_bandi
+from bandi_utils import formatta_bandi
 from storage_handler import upload_html_to_supabase
 
 anthropic.api_key = os.getenv("ANTHROPIC_API_KEY")
