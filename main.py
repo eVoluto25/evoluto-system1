@@ -6,7 +6,7 @@ from extractor import estrai_dati_da_pdf
 from gpt_module import analizza_completo_con_gpt
 from claude_module import genera_relazione_con_claude
 from pipeline import aggiorna_bandi
-from moduli.make_webhook import invia_a_make
+from make_webhook import invia_a_make
 
 app = FastAPI()
 
