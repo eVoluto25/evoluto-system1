@@ -1,7 +1,7 @@
 import os
 import logging
 import openai  # minuscolo, corretto
-from moduli.storage_supabase import upload_claude_to_supabase
+from storage_handler import upload_html_to_supabase
 from datetime import datetime
 
 def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: list) -> str:
