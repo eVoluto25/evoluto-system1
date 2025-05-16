@@ -8,25 +8,60 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
 
-        prompt = (
-            f"L'azienda ha queste caratteristiche:\n"
-            f"- Denominazione: {caratteristiche.get('denominazione', 'N/D')}\n"
-            f"- Amministratore: {caratteristiche.get('amministratore', 'N/D')}\n"
-            f"- Forma giuridica: {caratteristiche.get('forma_giuridica')}\n"
-            f"- Codice ATECO: {caratteristiche.get('codice_ateco')}\n"
-            f"- Attività prevalente: {caratteristiche.get('attivita_prevalente')}\n\n"
-            f"Hai ricevuto un'analisi finanziaria dell'azienda basata sul suo bilancio:\n\n"
-            f"📊 Analisi GPT:\n{analisi_gpt}\n\n"
-            f"I bandi compatibili trovati sono:\n"
-            f"{formatta_bandi(bandi)}\n\n"
-            f"🎯 Elabora una relazione sintetica che identifichi:\n"
-            f"1. I bandi più coerenti con la situazione economica dell’azienda\n"
-            f"2. Perché sono rilevanti\n"
-            f"3. Quali benefici potrebbe ottenere\n"
-            f"Usa uno stile chiaro, professionale e numerato."
-            f"Restituisci tutto in formato HTML ordinato, usando <h2> per i titoli di sezione e <p> per i paragrafi."
-        )
+        
+prompt = (
+    f"L'azienda presenta le seguenti caratteristiche ufficiali:
+"
+    f"- Denominazione: {caratteristiche.get('denominazione', 'N/D')}
+"
+    f"- Amministratore: {caratteristiche.get('amministratore', 'N/D')}
+"
+    f"- Forma giuridica: {caratteristiche.get('forma_giuridica')}
+"
+    f"- Codice ATECO: {caratteristiche.get('codice_ateco')}
+"
+    f"- Attività prevalente: {caratteristiche.get('attivita_prevalente')}
 
+"
+    f"📊 Analisi economico-finanziaria dell'impresa (GPT):
+{analisi_gpt}
+
+"
+    f"📁 Elenco bandi compatibili individuati:
+{formatta_bandi(bandi)}
+
+"
+
+    f"🎯 Il tuo compito è redigere una relazione tecnico-strategica per identificare le migliori opportunità pubbliche per questa azienda, valutando i bandi trovati.
+
+"
+
+    f"Per ciascun bando, esegui questa valutazione in 5 punti:
+"
+    f"1. Verifica l'ammissibilità formale dell'impresa (forma giuridica, territorio, settore, codice ATECO)
+"
+    f"2. Valuta la coerenza tra finalità del bando e l’analisi economico-finanziaria dell’impresa (es. ROI, DSCR, EBITDA, indebitamento, flusso di cassa, sostenibilità debito)
+"
+    f"3. Se disponibile, usa il giudizio ESG espresso da GPT per consigliare bandi green/sostenibili
+"
+    f"4. Assegna un punteggio alla probabilità di successo nel vincere il bando, da ⭐ a ⭐⭐⭐⭐⭐ (basato su coerenza economica, tecnica, rating e livello di concorrenza previsto)
+"
+    f"5. Se ci sono più di 5 bandi, seleziona e classifica i 5 più vantaggiosi, indicando: 1° più rilevante, fino al 5° (per impatto economico e facilità di attivazione)
+
+"
+
+    f"📝 Riporta il tutto in formato HTML ordinato:
+"
+    f"- Usa <h2> per i titoli delle sezioni
+"
+    f"- Usa <h3> per ogni bando analizzato
+"
+    f"- Usa <p> e <ul><li> per descrivere punti e analisi
+"
+    f"- Evidenzia <strong> i dati principali e le raccomandazioni finali
+"
+    f"💡 Dopo aver analizzato i primi 5 bandi più coerenti, elenca in fondo alla relazione anche tutti gli altri bandi compatibili rimasti (senza commento), come riepilogo. Indica per ciascuno solo titolo.\n"
+)
         openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
