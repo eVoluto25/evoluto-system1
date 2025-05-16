@@ -82,12 +82,6 @@ async def analizza_pdf(
     except requests.exceptions.RequestException as e:
     print(f"❌ Errore invio Make: {e}")
 
-    # Restituzione risposta finale
-
-    return {
-        "analisi": analisi_finanziaria,
-        "bandi": bandi_compatibili,
-        "relazione": relazione_finale
     try:
         # Pulizia file temporaneo
         os.remove(temp_file_path)
