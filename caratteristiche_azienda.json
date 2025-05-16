@@ -1,7 +1,9 @@
-{
-  "codice_ateco": "62.01",
-  "regione": "Lazio",
-  "forma_giuridica": "srl",
-  "denominazione": "XYZ CONSULTING SRL",
-  "amministratore": "Mario Rossi"
+caratteristiche_azienda = {
+    "forma_giuridica": estrai_valore(testo, r"Forma giuridica[:\s]+(.+?)\n"),
+    "codice_ateco": estrai_valore(testo, r"Codice Ateco[:\s]+(.+?)\n"),
+    "attivita_prevalente": estrai_valore(testo, r"Attività prevalente[:\s]+(.+?)\n"),
+    "denominazione": estrai_valore(testo, r"Denominazione[:\s]+(.+?)\n"),
+    "amministratore": estrai_valore(testo, r"Amministratore[:\s]+(.+?)\n"),
+    "cap": estrai_valore(testo, r"CAP[:\s]+(\d{5})\b"),
+    "provincia": estrai_valore(testo, r"Provincia[:\s]+([A-Z]{2})\b")
 }
