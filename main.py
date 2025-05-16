@@ -74,28 +74,29 @@ async def analizza_pdf(
         "outputClaude": link_claude
 }
 
-# Invio al webhook Make
-    response = requests.post("https://hook.eu2.make.com/tuo_webhook", json=payload)
-    response.raise_for_status()
-    print("✅ Dati inviati correttamente a Make.")
-except requests.exceptions.RequestException as e:
+    # Invio al webhook Make
+    try:
+        response = requests.post("https://hook.eu2.make.com/tuo_webhook", json=payload)
+        response.raise_for_status()
+        print("✅ Dati inviati correttamente a Make.")
+    except requests.exceptions.RequestException as e:
     print(f"❌ Errore invio Make: {e}")
 
-# Restituzione risposta finale
+    # Restituzione risposta finale
 
-        return {
-            "analisi": analisi_finanziaria,
-            "bandi": bandi_compatibili,
-            "relazione": relazione_finale
-        try:
-            # Pulizia file temporaneo
-            os.remove(temp_file_path)
-        except Exception as e:
-           logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
+    return {
+        "analisi": analisi_finanziaria,
+        "bandi": bandi_compatibili,
+        "relazione": relazione_finale
+    try:
+        # Pulizia file temporaneo
+        os.remove(temp_file_path)
+    except Exception as e:
+       logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
 
-        # Restituzione risposta finale
-        return {
-            "analisi": analisi_finanziaria,
-            "bandi": bandi_compatibili,
-            "relazione": relazione_finale
+    # Restituzione risposta finale
+    return {
+        "analisi": analisi_finanziaria,
+        "bandi": bandi_compatibili,
+        "relazione": relazione_finale
         }
