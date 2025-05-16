@@ -24,6 +24,11 @@ def suddividi_testo_in_blocchi(testo, max_token=1500):
 def genera_prompt_bancabile(testo_estratto):
     prompt = f"""
 Sei un CFO esperto in analisi bancarie. Ricevi un bilancio aziendale e devi fornire una valutazione tecnica, sintetica e leggibile da un direttore bancario. 
+📌 Dati aziendali:
+- Denominazione: {caratteristiche.get('denominazione', 'N/D')}
+- Codice ATECO: {caratteristiche.get('codice_ateco', 'N/D')}
+- CAP: {caratteristiche.get('cap', 'N/D')}
+- Provincia: {caratteristiche.get('provincia', 'N/D')}
 
 Per ciascun indice, calcola il valore numerico e affianca un giudizio sintetico (🔵 Ottimo / 🟢 Buono / 🟡 Sufficiente / 🟠 Debole / 🔴 Critico). Non scrivere spiegazioni testuali.
 
