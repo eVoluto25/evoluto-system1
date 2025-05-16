@@ -36,7 +36,7 @@ async def analizza_pdf(
             return JSONResponse(status_code=422, content={"errore": "Dati insufficienti"})
 
         logging.info("🤖 Chiamata a GPT in corso...")
-        analisi_finanziaria = analizza_completo_con_gpt(bilancio)
+        analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
         link_gpt = upload_html_to_supabase(
         f"<html><body>{analisi_finanziaria}</body></html>",
         filename_prefix="output_gpt"
