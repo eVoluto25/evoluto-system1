@@ -14,7 +14,7 @@ def upload_html_to_supabase(contenuto_html: str, nome_file: str) -> str:
     supabase_bucket = os.getenv("SUPABASE_BUCKET_NAME")
     supabase_access_key = os.getenv("SUPABASE_S3_ACCESS_KEY")
 
-    if not all([supabase_url, supabase_bucket, supabase_api_key]):
+    if not all([supabase_url, supabase_bucket, supabase_access_key]):
         raise EnvironmentError("Variabili d'ambiente Supabase mancanti")
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
