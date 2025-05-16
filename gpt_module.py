@@ -1,7 +1,7 @@
 import logging
 import openai
 import os
-from supabase_uploader import upload_html_to_supabase
+from storage_handler import upload_html_to_supabase
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
