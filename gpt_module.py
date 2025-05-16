@@ -116,7 +116,7 @@ def analizza_blocchi_gpt(testo_bilancio):
 
     if risultati:
         html_finale = "<html><body>" + "<hr>".join(risultati) + "</body></html>"
-        url_output = upload_html_to_supabase(html_finale, filename_prefix="output_gpt")
+        url_output = upload_html_to_supabase(html_finale, "output_gpt.html")
         return url_output
     else:
         return None
