@@ -86,8 +86,8 @@ Dati del bilancio:
 """
     return prompt
 
-def analizza_completo_con_gpt(testo, caratteristiche_azienda):
-    prompt = genera_prompt_bancabile(testo_estratto, caratteristiche_azienda)
+def analizza_completo_con_gpt(testo_estratto, caratteristiche_azienda):
+    prompt = genera_prompt_bancabile(testo, caratteristiche_azienda)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
