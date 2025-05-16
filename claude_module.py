@@ -1,4 +1,10 @@
 import logging
+import os
+import anthropic
+from storage_handler import upload_html_to_supabase
+
+anthropic.api_key = os.getenv("ANTHROPIC_API_KEY")
+
 def genera_relazione_con_claude(analisi_gpt: str, caratteristiche_azienda: dict, bandi: list) -> str:
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
