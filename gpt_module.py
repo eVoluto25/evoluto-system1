@@ -82,7 +82,7 @@ Per ciascun indice, calcola il valore numerico e affianca un giudizio sintetico 
 <p>Restituisci la risposta in formato HTML, usa &lt;ul&gt; per le liste e &lt;h4&gt; per i blocchi. Nessun commento narrativo: solo dati e valutazioni sintetiche. Ogni indice deve avere accanto il voto.</p>
 
 Dati del bilancio:
-{text_estratto}
+{testo_estratto}
 """
     return prompt
 
