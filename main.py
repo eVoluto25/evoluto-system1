@@ -38,10 +38,9 @@ async def analizza_pdf(
 
         logging.info("🤖 Chiamata a GPT in corso...")
         analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
+        html_finale = f"<html><body>{analisi_finanziaria}</body></html>"
         link_gpt = upload_html_to_supabase(html_finale, "output_gpt.html")
-        f"<html><body>{analisi_finanziaria}</body></html>",
-        "output_gpt.html"
-)
+        
         if not analisi_finanziaria or analisi_finanziaria.strip() == "":
             logging.error("❌ GPT ha restituito una risposta vuota o nulla.")
             return JSONResponse(status_code=422, content={"errore": "Analisi GPT non riuscita"})
