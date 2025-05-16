@@ -9,7 +9,7 @@ def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: 
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
       
 prompt = (
-    f"L'azienda presenta le seguenti caratteristiche ufficiali:
+    f"L'azienda presenta le seguenti caratteristiche ufficiali:"
 "
     f"- Denominazione: {caratteristiche.get('denominazione', 'N/D')}
 "
