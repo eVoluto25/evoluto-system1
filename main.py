@@ -49,7 +49,7 @@ async def analizza_pdf(
         bandi_compatibili = aggiorna_bandi()
 
         logging.info("📎 Generazione relazione finale tramite Claude")
-        relazione_finale = genera_relazione_con_claude (analisi_gpt: str, caratteristiche_azienda: dict, bandi: list)
+        relazione_finale = genera_relazione_con_claude(analisi_finanziaria, caratteristiche_azienda, bandi_compatibili)
 
         try:
             payload = {
