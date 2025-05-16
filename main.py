@@ -79,14 +79,15 @@ async def analizza_pdf(
         response = requests.post("https://hook.eu2.make.com/tuo_webhook", json=payload)
         response.raise_for_status()
         print("✅ Dati inviati correttamente a Make.")
+
+        # Pulizia file temporaneo
+        try:
+            os.remove(temp_file_path)
+        except Exception as e:
+            logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
+
     except requests.exceptions.RequestException as e:
     print(f"❌ Errore invio Make: {e}")
-
-    try:
-        # Pulizia file temporaneo
-        os.remove(temp_file_path)
-    except Exception as e:
-       logging.warning(f"⚠️ Impossibile rimuovere il file temporaneo: {e}")
 
     # Restituzione risposta finale
     return {
