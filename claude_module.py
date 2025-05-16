@@ -1,15 +1,15 @@
-def genera_relazione_con_claude(analisi_gpt: str, caratteristiche: dict, bandi: list) -> str:
+def genera_relazione_con_claude(analisi_gpt: str, caratteristiche_azienda: dict, bandi: list) -> str:
     try:
         logging.info("🤖 Claude sta confrontando l'analisi GPT con i bandi disponibili...")
 
         caratteristiche_text = f"""
 L'azienda presenta le seguenti caratteristiche ufficiali:
-- Regione: {caratteristiche.get("regione", "N/D")}
-- Provincia: {caratteristiche.get("provincia", "N/D")}
-- Codice ATECO: {caratteristiche.get("codice_ateco", "N/D")}
-- Forma giuridica: {caratteristiche.get("forma_giuridica", "N/D")}
-- Amministratore: {caratteristiche.get("amministratore", "N/D")}
-- Denominazione: {caratteristiche.get("denominazione", "N/D")}
+- Regione: {caratteristiche_azienda.get("regione", "N/D")}
+- Provincia: {caratteristiche_azienda.get("provincia", "N/D")}
+- Codice ATECO: {caratteristiche_azienda.get("codice_ateco", "N/D")}
+- Forma giuridica: {caratteristiche_azienda.get("forma_giuridica", "N/D")}
+- Amministratore: {caratteristiche_azienda.get("amministratore", "N/D")}
+- Denominazione: {caratteristiche_azienda.get("denominazione", "N/D")}
 """
 
         prompt = caratteristiche_text + f"""
