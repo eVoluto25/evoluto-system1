@@ -38,8 +38,9 @@ async def analizza_pdf(
 
         if not caratteristiche_azienda or not bilancio or bilancio.strip() == "":
             logging.warning("⚠️ Dati aziendali o bilancio assenti, interruzione pipeline.")
-            return JSONResponse(status_code=422,content={"errore": "Dati insufficienti", "caratteristiche": caratteristiche_azienda, "bilancio": bilancio})
-    
+            return JSONResponse(status_code=422,content={"errore": "Dati insufficienti", "caratteristiche": caratteristiche_azienda, "bilancio": bilancio}
+    )
+
         logging.info("🤖 Chiamata a GPT in corso...")
         analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
         html_finale = f"<html><body>{analisi_finanziaria}</body></html>"
@@ -65,8 +66,6 @@ async def analizza_pdf(
             "outputGpt": link_gpt,
             "outputClaude": link_claude
         }
-    except Exception as e:
-        logging.error(f"❌ Errore nella creazione del payload: {e}")
             
     from supabase_client import supabase  # già pronto nel tuo progetto
    
