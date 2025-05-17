@@ -38,7 +38,7 @@ async def analizza_pdf(
 
         if not caratteristiche_azienda or not bilancio or bilancio.strip() == "":
             logging.warning("⚠️ Dati aziendali o bilancio assenti, interruzione pipeline.")
-            return JSONResponse(status_code=422,content={"errore": "Dati insufficienti", "caratteristiche": caratteristiche_azienda, "bilancio": bilancio}
+            return JSONResponse(status_code=422,content={"errore": "Dati insufficienti", "caratteristiche": caratteristiche_azienda, "bilancio": bilancio})
     )
 
         logging.info("🤖 Chiamata a GPT in corso...")
