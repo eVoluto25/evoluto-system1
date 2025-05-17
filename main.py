@@ -19,6 +19,8 @@ def root_head():
 async def analizza_pdf(
     upload_1: UploadFile = Form(...),
     email_1: str = Form(...)
+    telefono_1: str = Form(...),
+    nome_1: str = Form(...)
 ):
     logging.info("✅ Ricevuto upload_1: %s, email_1: %s", upload_1.filename, email_1)
 
@@ -73,8 +75,13 @@ async def analizza_pdf(
          # 🔽 Inserimento in Supabase per Make
          supabase.table("analisi_gpt").insert({
              "email": email_1,
+             "telefono": telefono_1,
+             "nome": nome_1,
              "output_gpt": link_gpt,
              "output_claude": link_claude
+             "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+             "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+             "inviato": False
          }).execute()
          logging.info("📩 Link salvati su Supabase per invio Make")
             "status": "ok",
