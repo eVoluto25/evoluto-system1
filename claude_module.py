@@ -28,7 +28,7 @@ L'azienda presenta le seguenti caratteristiche ufficiali:
 
 📋 I bandi compatibili trovati sono:
 
-{aggiorna_bandi(bandi)}
+{aggiorna_bandi()}
 
 🧠 Elabora una relazione sintetica che identifichi:
 1. I bandi più coerenti con la situazione economica dell’azienda
