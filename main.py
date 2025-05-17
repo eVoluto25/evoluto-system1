@@ -31,9 +31,13 @@ async def analizza_pdf(
         caratteristiche_azienda, bilancio = estrai_dati_da_pdf(temp_file_path)
         logging.info("📄 Estrazione dati completata")
 
-        if not caratteristiche_azienda or not bilancio:
-            logging.error("❌ Dati aziendali o bilancio mancanti o vuoti")
-            return JSONResponse(status_code=422, content={"errore": "Dati insufficienti"})
+        logging.info(f"🧾 Caratteristiche azienda: {caratteristiche_azienda}")
+        logging.info(f"📊 Estratto bilancio: primi 200 caratteri → {bilancio[:200]}")
+
+        if not caratteristiche_azienda or not bilancio or bilancio.strip() == "":
+            logging.warning("⚠️ Dati aziendali o bilancio assenti, interruzione pipeline.")
+            return JSONResponse(status_code=422,content={"errore": "Dati insufficienti", "caratteristiche": caratteristiche_azienda, "bilancio": bilancio}
+    )
 
         logging.info("🤖 Chiamata a GPT in corso...")
         analisi_finanziaria = analizza_completo_con_gpt(bilancio, caratteristiche_azienda)
@@ -53,25 +57,27 @@ async def analizza_pdf(
         html_claude = f"<html><body>{relazione_finale}</body></html>"
         link_claude = upload_html_to_supabase(html_claude, "output_claude.html")
 
-    try:
-        payload = {
+        try:
+            payload = {
             "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
             "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
             "outputGpt": link_gpt,
             "outputClaude": link_claude
         }
         invia_a_make(payload)
-        logging.info("✅ Pipeline completata con successo, Make riceve link HTML")
+            logging.info("✅ Pipeline completata con successo, Make riceve link HTML")
         return {
             "status": "ok",
             "outputGpt": link_gpt,
             "outputClaude": link_claude
         }
         
-    except Exception as e:
-        logging.warning(f"❌ Errore durante l'invio a Make: {e}")
-        try:
-            os.remove(temp_file_path)
+        except Exception as e:
+            logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+            # Provo a rimuovere il file temporaneo
+            try:
+                os.remove(temp_file_path)
+                logging.info("🧹 File temporaneo rimosso con successo.")
         except Exception as e:
             logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
         return {
