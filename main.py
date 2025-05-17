@@ -90,7 +90,7 @@ async def analizza_pdf(
             "inviato": False
         }).execute()
         
-        logging.info({
+         logging.info({
             "status": "ok",
             "outputGpt": link_gpt,
             "outputClaude": link_claude,
