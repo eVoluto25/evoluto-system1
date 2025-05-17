@@ -91,7 +91,6 @@ async def analizza_pdf(
             "outputGpt": link_gpt,
             "outputClaude": link_claude
             "inviato": False
-        }
         
         except Exception as e:
             logging.warning(f"❌ Errore durante l'invio a Make: {e}")
