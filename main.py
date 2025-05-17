@@ -89,11 +89,12 @@ async def analizza_pdf(
              "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
              "inviato": False
          }).execute()
-         logging.info("📩 Link salvati su Supabase per invio Make")
-            "status": "ok",
-            "outputGpt": link_gpt,
-            "outputClaude": link_claude
-            "inviato": False
+         logging.info({
+             "status": "ok",
+             "outputGpt": link_gpt,
+             "outputClaude": link_claude
+             "inviato": False 
+         })
         
         except Exception as e:
             logging.warning(f"❌ Errore durante l'invio a Make: {e}")
