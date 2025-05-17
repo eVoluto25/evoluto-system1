@@ -66,8 +66,8 @@ async def analizza_pdf(
             "outputGpt": link_gpt,
             "outputClaude": link_claude
         }
-    except Exception as e:
-        logging.error(f"❌ Errore nella creazione del payload: {e}")
+except Exception as e:
+    logging.error(f"❌ Errore nella creazione del payload: {e}")
             
     from supabase_client import supabase  # già pronto nel tuo progetto
    
@@ -109,3 +109,5 @@ async def analizza_pdf(
                 analisi_finanziaria, caratteristiche_azienda, bandi_compatibili
             )
         }  
+except Exception as e:
+    logging.error(f"❌ Errore nella creazione del payload: {e}")
