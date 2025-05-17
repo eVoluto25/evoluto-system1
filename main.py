@@ -84,7 +84,7 @@ async def analizza_pdf(
              "telefono": telefono_1,
              "nome": nome_1,
              "output_gpt": link_gpt,
-             "output_claude": link_claude
+             "output_claude": link_claude,
              "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
              "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
              "inviato": False
