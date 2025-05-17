@@ -110,5 +110,5 @@ async def analizza_pdf(
                 analisi_finanziaria, caratteristiche_azienda, bandi_compatibili
             )
         }  
-except Exception as e:
-    logging.error(f"❌ Errore nella creazione del payload: {e}")
+        except Exception as e:
+            logging.error(f"❌ Errore nella creazione del payload: {e}")
