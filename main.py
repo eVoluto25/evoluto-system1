@@ -75,10 +75,7 @@ async def analizza_pdf(
     try:
         invia_a_make(payload)
         logging.info("✅ Pipeline completata con successo, Make riceve link HTML")
-    except Exception as e:
-        logging.error(f"❌ Errore nell'invio a Make: {e}")
-        
-    try:
+   
         supabase.table("analisi_gpt").insert({
             "email": email_1,
             "telefono": telefono_1,
@@ -90,15 +87,15 @@ async def analizza_pdf(
             "inviato": False
         }).execute()
         
-    logging.info({
-        "status": "ok",
-        "outputGpt": link_gpt,
-        "outputClaude": link_claude,
-        "inviato": False
-    })
+        logging.info({
+            "status": "ok",
+            "outputGpt": link_gpt,
+            "outputClaude": link_claude,
+            "inviato": False
+        })
 
-     except Exception as e:
-         logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+    except Exception as e:
+        logging.warning(f"❌ Errore durante l'invio a Make: {e}")
     
      # Provo a rimuovere il file temporaneo
      try:
