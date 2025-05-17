@@ -60,17 +60,15 @@ async def analizza_pdf(
         link_claude = upload_html_to_supabase(html_claude, "output_claude.html")
 
         try:
-            # Blocco protetto che crea il payload
             payload = {
-            "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
-            "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-            "outputGpt": link_gpt,
-            "outputClaude": link_claude
-        }
-        # Inserisco anche una riga log per evitare che il blocco `try` risulti vuoto in alcuni interpreti
-        logging.info("✅ Payload creato correttamente.")
-    except Exception as e:
-    logging.error(f"❌ Errore nella creazione del payload: {e}")
+                "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+                "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+                "outputGpt": link_gpt,
+                "outputClaude": link_claude
+            }
+            logging.info("✅ Payload creato correttamente.")
+        except Exception as e:
+            logging.error(f"❌ Errore nella creazione del payload: {e}")
             
     from supabase_client import supabase  # già pronto nel tuo progetto
    
