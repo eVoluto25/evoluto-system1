@@ -31,7 +31,7 @@ def scarica_file(url, destinazione):
     print(f"✅ File aggiornato scaricato in {destinazione}")
 
 
-def formatta_bandi():
+def aggiorna_bandi():
     if file_aggiornato(DATASET_URL, ETAG_FILE):
         scarica_file(DATASET_URL, DATASET_FILE)
     else:
@@ -39,4 +39,4 @@ def formatta_bandi():
 
 
 if __name__ == "__main__":
-    formatta_bandi()
+    aggiorna_bandi()
