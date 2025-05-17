@@ -89,13 +89,6 @@ async def analizza_pdf(
             "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
             "inviato": False
         }).execute()
-    
-        logging.info({
-            "status": "ok",
-            "outputGpt": link_gpt,
-            "outputClaude": link_claude
-            "inviato": False 
-         }).execute()
         
          logging.info({
              "status": "ok",
