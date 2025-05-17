@@ -64,12 +64,23 @@ async def analizza_pdf(
             "outputGpt": link_gpt,
             "outputClaude": link_claude
         }
+            
+    from supabase_client import supabase  # già pronto nel tuo progetto
+    try:
         invia_a_make(payload)
             logging.info("✅ Pipeline completata con successo, Make riceve link HTML")
-        return {
+        
+         # 🔽 Inserimento in Supabase per Make
+         supabase.table("analisi_gpt").insert({
+             "email": email_1,
+             "output_gpt": link_gpt,
+             "output_claude": link_claude
+         }).execute()
+         logging.info("📩 Link salvati su Supabase per invio Make")
             "status": "ok",
             "outputGpt": link_gpt,
             "outputClaude": link_claude
+            "inviato": False
         }
         
         except Exception as e:
