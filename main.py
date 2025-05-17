@@ -98,13 +98,13 @@ async def analizza_pdf(
         logging.warning(f"❌ Errore durante l'invio a Make: {e}")
     
      # Provo a rimuovere il file temporaneo
-     try:
-         os.remove(temp_file_path)
-         logging.info("🧹 File temporaneo rimosso con successo.")
-     except Exception as e:
+    try:
+        os.remove(temp_file_path)
+        logging.info("🧹 File temporaneo rimosso con successo.")
+    except Exception as e:
         logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
     
-     return {
+    return {
         "analisi": analisi_finanziaria,
         "bandi": bandi_compatibili,
         "relazione_finale": genera_relazione_con_claude(
