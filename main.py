@@ -61,6 +61,12 @@ async def analizza_pdf(
             "outputClaude": link_claude
         }
         invia_a_make(payload)
+        logging.info("✅ Pipeline completata con successo, Make riceve link HTML")
+        return {
+            "status": "ok",
+            "outputGpt": link_gpt,
+            "outputClaude": link_claude
+        }
         
     except Exception as e:
         logging.warning(f"❌ Errore durante l'invio a Make: {e}")
