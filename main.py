@@ -18,7 +18,7 @@ def root_head():
 @app.post("/analizza-pdf")
 async def analizza_pdf(
     upload_1: UploadFile = Form(...),
-    email_1: str = Form(...)
+    email_1: str = Form(...),
     telefono_1: str = Form(...),
     nome_1: str = Form(...)
 ):
