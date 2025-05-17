@@ -78,45 +78,43 @@ async def analizza_pdf(
     except Exception as e:
         logging.error(f"❌ Errore nell'invio a Make: {e}")
         
-    # 🔽 Inserimento in Supabase per Make
-    supabase.table("analisi_gpt").insert({
-        "email": email_1,
-        "telefono": telefono_1,
-        "nome": nome_1,
-        "output_gpt": link_gpt,
-        "output_claude": link_claude,
-        "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
-        "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
-        "inviato": False
-    }).execute()
-    
-    logging.info({
-        "status": "ok",
-        "outputGpt": link_gpt,
-        "outputClaude": link_claude
-        "inviato": False 
-    })
-        
-   try:
-    # Log informativo
-    logging.info({
-        "status": "ok",
-        "outputGpt": link_gpt,
-        "outputClaude": link_claude,
-        "inviato": False
-    })
-
-except Exception as e:
-    logging.warning(f"❌ Errore durante l'invio a Make: {e}")
-    
-    # Provo a rimuovere il file temporaneo
     try:
-        os.remove(temp_file_path)
-        logging.info("🧹 File temporaneo rimosso con successo.")
-    except Exception as e:
+        supabase.table("analisi_gpt").insert({
+            "email": email_1,
+            "telefono": telefono_1,
+            "nome": nome_1,
+            "output_gpt": link_gpt,
+            "output_claude": link_claude,
+            "denominazione": caratteristiche_azienda.get("denominazione", "N/D"),
+            "amministratore": caratteristiche_azienda.get("amministratore", "N/D"),
+            "inviato": False
+        }).execute()
+    
+        logging.info({
+            "status": "ok",
+            "outputGpt": link_gpt,
+            "outputClaude": link_claude
+            "inviato": False 
+         }).execute()
+        
+         logging.info({
+             "status": "ok",
+             "outputGpt": link_gpt,
+             "outputClaude": link_claude,
+             "inviato": False
+         })
+
+     except Exception as e:
+         logging.warning(f"❌ Errore durante l'invio a Make: {e}")
+    
+     # Provo a rimuovere il file temporaneo
+     try:
+         os.remove(temp_file_path)
+         logging.info("🧹 File temporaneo rimosso con successo.")
+     except Exception as e:
         logging.warning(f"⚠️ Errore durante la rimozione del file temporaneo: {e}")
     
-    return {
+     return {
         "analisi": analisi_finanziaria,
         "bandi": bandi_compatibili,
         "relazione_finale": genera_relazione_con_claude(
