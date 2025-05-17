@@ -90,11 +90,11 @@ async def analizza_pdf(
             "inviato": False
         }).execute()
         
-         logging.info({
-             "status": "ok",
-             "outputGpt": link_gpt,
-             "outputClaude": link_claude,
-             "inviato": False
+        logging.info({
+            "status": "ok",
+            "outputGpt": link_gpt,
+            "outputClaude": link_claude,
+            "inviato": False
          })
 
      except Exception as e:
